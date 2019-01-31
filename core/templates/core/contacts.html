@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+{% load staticfiles %}
+{% block static %}
+<script type="text/javascript" src="{% static 'core/js/tabs.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="body3">
+	<div class="main">
+		<!-- content -->
+		<article id="content">
+			<div class="wrapper">
+				<section class="col1">
+					<h2 class="under">Contact form</h2>
+					<form id="ContactForm" method="post">
+						<div>
+							<div  class="wrapper">
+								<span>Your Name:</span>
+								<input type="text" class="input" >
+							</div>
+							<div  class="wrapper">
+								<span>Your City:</span>
+								<input type="text" class="input" >
+							</div>
+							<div  class="wrapper">
+								<span>Your E-mail:</span>
+								<input type="text" class="input" >
+							</div>
+							<div  class="textarea_box">
+								<span>Your Message:</span>
+								<textarea name="textarea" cols="1" rows="1"></textarea>
+							</div>
+							<a href="#" onClick="document.getElementById('ContactForm').submit()">Send</a>
+							<a href="#" onClick="document.getElementById('ContactForm').reset()">Clear</a>
+						</div>
+					</form>
+				</section>
+				<section class="col2 pad_left1">
+					<h2 class="under">Contacts</h2>
+					<div id="address"><span>Country:<br>
+								City:<br>
+								Telephone:<br>
+								Email:</span>
+						USA<br>
+						San Diego<br>
+						+354 5635600<br>
+						<a href="mailto:" class="color2">elenwhite@mail.com</a></div>
+					<h2 class="under">Miscellaneous</h2>
+					<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium volupta- tum deleniti atque corrupti quos dolores et quas molestias excep- turi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum.</p>
+				</section>
+			</div>
+
+		</article>
+	</div>
+</div>
+{% endblock %}
