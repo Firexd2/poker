@@ -15,7 +15,7 @@ body{background:#000;border:0;font:14px "Trebuchet MS", Arial, Helvetica, sans-s
 .body4{background:url(../images/bg.jpg) top center repeat}
 .body5{background:url(../images/bg_top_img.jpg) center bottom no-repeat}
 /* Global Structure ============================================================= */
-.main {margin:0 auto;width:940px}
+.main-template {margin:0 auto;width:940px}
 /* ============================= main layout ====================== */
 a{color:#696969;text-decoration:underline;outline:none}
 a:hover{text-decoration:none}
@@ -59,7 +59,7 @@ header{padding-top:34px;height:148px}
 .slider  .pagination a{display:block;width:16px;height:16px;text-indent:-9999px;background:url(../images/buttons.png) right 0 no-repeat}
 .slider  .pagination a:hover, .slider  .pagination .current a{background-position:left}
 /* ============================= content ====================== */
-#content{padding-top:50px;padding-bottom:36px}
+#content-template{padding-top:50px;padding-bottom:36px}
 #content2{padding-bottom:50px}
 .pad_left1{padding-left:50px}
 .pad_left2{padding-left:40px}
@@ -120,3 +120,4 @@ footer a:hover{}
 #newsletter .wrapper{min-height:40px}
 #newsletter a{float:right;width:90px;height:32px;background:#fff;line-height:32px;color:#000;font-weight:bold;text-align:center;font-style:normal;text-decoration:none}
 #newsletter a:hover{background:#60b000;color:#fff}
+*, ::after, ::before {box-sizing: inherit}
