@@ -6,7 +6,7 @@ mark, rp, rt, ruby, summary, time{display:inline }
 .right {float:right}
 .wrapper {width:100%;overflow:hidden}
 /* Global properties ======================================================== */
-body{background:#000;border:0;font:14px "Trebuchet MS", Arial, Helvetica, sans-serif;color:#696969;line-height:22px;font-style:italic}
+body{background:#000;border:0;font:14px "Trebuchet MS", Arial, Helvetica, sans-serif;color: #434343;line-height:22px;font-style:normal}
 .ic, .ic a {border:0;float:right;background:#fff;color:#f00;width:50%;line-height:10px;font-size:10px;margin:-220% 0 0 0;overflow:hidden;padding:0}
 .css3{border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px;box-shadow:0 0 4px rgba(0, 0, 0, .4);-moz-box-shadow:0 0 4px rgba(0, 0, 0, .4);-webkit-box-shadow:0 0 4px rgba(0, 0, 0, .4);position:relative}
 .body1{background:url(../images/bg.jpg) bottom center repeat}
@@ -121,3 +121,28 @@ footer a:hover{}
 #newsletter a{float:right;width:90px;height:32px;background:#fff;line-height:32px;color:#000;font-weight:bold;text-align:center;font-style:normal;text-decoration:none}
 #newsletter a:hover{background:#60b000;color:#fff}
 *, ::after, ::before {box-sizing: inherit}
+.table {line-height: 15px}
+.table .thead-dark th {background-color: #3d3d3d;border-color: #3d3d3d}
+.buttons-tr th  {border-bottom: none !important; border-top: none !important; padding: 0 !important;}
+.focus {box-shadow: none !important;}
+.btn {border-radius: 0px !important;}
+.table-striped thead th {vertical-align: bottom;border-bottom: 1px solid #dee2e6;}
+.table-size-th {text-align: right; font-weight: normal}
+.table-size-th label {padding-left: 15px}
+.table-striped td, th {padding: .75rem;vertical-align: top;border-top: 0px solid #dee2e6!important;}
+.table-size thead th, .table-slide thead th {vertical-align: middle!important;border-bottom: 0px solid #dee2e6; background-color: rgba(0,0,0,.05); padding: 15px 15px 15px 15px}
+.slider {top: 0 !important;position: absolute;z-index: 4; overflow: visible !important; margin-left: 30px}
+#ex6CurrentSliderValLabel {padding: 0 0 0 15px; vertical-align: bottom !important;}
+.table-slide tr {font-weight: normal !important;}
+.slider-handle {background-color: #080808 !important; background-image: inherit !important; width: 30px!important; height: 30px!important;}
+.slider.slider-horizontal .slider-handle {top: -5px; margin-left: -15px !important; background-color: #373632 !important;box-shadow: 1px 1px 3px rgba(0,0,0,0.5);}
+.form-control:focus {color: #495057;background-color: #fff;border-color: #74756d!important;outline: 0;box-shadow: 0 0 0 1px rgba(176, 174, 179, 0.86);}
+.pad_left3 {padding-left: 10px}
+.cart {width: 100%; background-color: white;min-height: 100px; box-shadow: 0 0 3px rgba(0,0,0,0.5); margin-top: 5px; position: relative;padding-bottom: 50px}
+.cart-tittle {font-size: 17px; padding: 10px 5px 8px 13px; background-color: rgba(0,0,0,.05); border-bottom: 1px solid #c9c9c9}
+.cart-items {}
+.cart-footer {position: absolute;bottom: 0; background-color: rgba(0,0,0,.05); height: 40px; width: 100%; border-top: 1px solid #c9c9c9}
+.cart-total {font-size: 17px; padding: 10px 5px 8px 13px;font-weight: bold; width: 55%; float: left}
+.cart-submit {width: 30%; float: right}
+.cart-submit button {margin: 7px 15px 7px 4px; padding: 1px 10px 1px 10px; font-size: 13px}
+.input-group {border-radius: 0 !important;}
