@@ -9,7 +9,8 @@ class NamedObjMixin(models.Model):
 
 
 class OnOffMixin(models.Model):
-    is_enabled = models.BooleanField("On/Off", default=True, blank=True)
+    is_enabled = models.BooleanField("Enabled", default=True, blank=True)
 
     class Meta:
         abstract = True
+

@@ -1,6 +1,8 @@
+from django import forms
 from django.db import models
 
 from core.mixins.models.mixins import NamedObjMixin, OnOffMixin
+from core.mixins.utils.mixins import name_to_url
 
 
 class Site(NamedObjMixin, OnOffMixin):
@@ -23,6 +25,14 @@ class LimitItem(OnOffMixin):
         verbose_name = 'Limit item'
         verbose_name_plural = 'Limit items'
 
+    def __str__(self):
+        limit = self.limit_set.all().first()
+        # TODO: для отладки
+        try:
+            return 'Table: {}; Limit: {}; Site: {}'.format(limit.table_set.all().first().name, limit.name, self.site.name)
+        except:
+            return 'INVALID'
+
 
 class Limit(NamedObjMixin, OnOffMixin):
 
@@ -33,3 +43,18 @@ class Limit(NamedObjMixin, OnOffMixin):
     class Meta:
         verbose_name = 'Limit'
         verbose_name_plural = 'Limits'
+
+
+class Table(NamedObjMixin, OnOffMixin):
+    limit = models.ManyToManyField('Limit', verbose_name='Limits', blank=True)
+    name_url = models.TextField('URL name', blank=True)
+
+    # TODO: запретить создавать новые столы
+
+    class Meta:
+        verbose_name = "Table"
+        verbose_name_plural = "Tables"
+
+    def save(self, *args, **kwargs):
+        self.name_url = name_to_url(self.name)
+        super(Table, self).save(*args, **kwargs)
