@@ -30,4 +30,4 @@ class ModelFormTableMixin(forms.ModelForm):
     """Миксин для добавления кастомного поля table для форм в админке
     """
     table = forms.ModelChoiceField(queryset=Table.objects.order_by('name'))
-    name = forms.CharField()
+    name = forms.CharField(required=True)

@@ -25,8 +25,8 @@ def create_default_tables(apps, schema_editor):
             limit = Limit.objects.create(name=limit_name)
 
             limit_items = []
-            for site in sites:
-                limit_item = LimitItem.objects.create(site=site)
+            for site_obj in sites[table.name]:
+                limit_item = LimitItem.objects.create(site=site_obj, price=10)
                 limit_items.append(limit_item)
 
             limit.item.add(*limit_items)
@@ -34,11 +34,13 @@ def create_default_tables(apps, schema_editor):
 
         return result
 
-    # создаем сайты
-    sites = []
-    for site_name in default_names_sites:
-        site = Site.objects.create(name=site_name)
-        sites.append(site)
+    # создаем сайты (для каждой таблицы свои)
+    sites = {}
+    for table_name in default_names_tables:
+        sites[table_name] = []
+        for site_name in default_names_sites:
+            site = Site.objects.create(name=site_name)
+            sites[table_name].append(site)
 
     # создаем столы и их лимиты
     for table_name in default_names_tables:
