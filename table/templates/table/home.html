@@ -79,14 +79,15 @@
                             {% for limit in limits %}
                                 <tr>
                                     <th scope="row">{{ limit.name }}</th>
-                                    {% for item in limit.item.all|is_enabled_site|sort_by:'site__name' %}
+                                    {% for item in limit.items.all|is_enabled_site|sort_by:'site__name' %}
                                         <td style="padding: 0 .75rem 0 .75rem" align="center">
-                                        {% if item.is_enabled %}
-                                            <label style="width: 100%; height: 100%; padding: 0.75rem 0 0.75rem 0">
-                                                <input class="limits-item" id="{{ item.site.name }}:{{ limit.name }}"
-                                                       type="checkbox">
-                                            </label>
-                                        {% endif %}
+                                            {% if item.is_enabled %}
+                                                <label style="width: 100%; height: 100%; padding: 0.75rem 0 0.75rem 0">
+                                                    <input class="limits-item"
+                                                           id="{{ item.site.name }}:{{ limit.name }}:{{ item.id }}"
+                                                           type="checkbox">
+                                                </label>
+                                            {% endif %}
                                         </td>
                                     {% endfor %}
                                 </tr>
@@ -201,41 +202,59 @@
                             <div class="cart-tittle">Cart content</div>
                             <table class="table cart-items">
                                 <tbody>
-                                <div style="text-align: center; margin-top: 20px">Cart is empty</div>
-{#                                <tr>#}
-{#                                    <th>#}
-{#                                        <span>#}
-{#                                            Subscribe: 888 (0.10/0.20, 0.15/0.30, 0.25/0.50, 0.50/1); HU; 1 days from 09.02.2019#}
-{#                                        </span>#}
-{#                                    </th>#}
-{#                                    <th width="50px" style="font-weight: bold;text-align: right">#}
-{#                                        <span>1000.99</span> $#}
-{#                                    </th>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <th>#}
-{#                                        <span>#}
-{#                                            Purchase: PS (0.25/0.50, 0.50/1); FR, SH; 2.5M#}
-{#                                        </span>#}
-{#                                    </th>#}
-{#                                    <th width="50px" style="font-weight: bold;text-align: right">#}
-{#                                        <span>34.99</span> $#}
-{#                                    </th>#}
-{#                                </tr>#}
+                                {% if request.session.cart_items %}
+                                    {% for item in request.session.cart_items %}
+                                        <tr>
+                                            <th style="">
+                                                <b>{{ item.type_package }}</b>:
+                                                <br>
+                                                {% if item.type_package == 'Subscription' %}
+                                                    {{ item.term }} days from {{ item.start_date }};
+                                                {% else %}
+                                                    {{ item.count_hands }};
+                                                {% endif %}
+                                                <br>
+                                                <b>{{ item.type_game }}</b>:
+                                                <br>
+                                                {{ item.tables }};
+                                                <br>
+                                                {% for site_name, limits in item.limits_item.items %}
+                                                    <b>{{ site_name }}</b>
+                                                    <br>
+                                                    ({{ limits }})
+                                                    <br>
+                                                {% endfor %}
+                                                <br>
+                                                <div style="float: left; font-size: 15px; font-weight: bold; margin-top: 5px">
+                                                    Price: <span>{{ item.price }}</span> $
+                                                </div>
+                                                <div style="float: right; font-size: 15px; font-weight: bold">
+                                                    <button style="float: right; margin: 0; opacity: 0.5" type="button"
+                                                            class="btn btn-outline-dark btn-sm-cart">
+                                                        delete
+                                                    </button>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <div style="text-align: center; margin-top: 20px">Cart is empty</div>
+                                {% endif %}
                                 </tbody>
                             </table>
                             <div class="cart-footer">
                                 <div class="cart-total">
-                                    Total: <span>0.00</span> $
+                                    Total: <span>{{ request.session.total }}</span> $
                                 </div>
                                 <div class="cart-submit">
-                                    <button style="float: right" type="button" class="btn btn-outline-success btn-sm">
-                                        Order
+                                    <button style="float: right" type="button" class="btn btn-success btn-sm-cart">
+                                        Make order
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div style="margin-top: 20px;background-color: rgba(75,201,249,0.3);display: none" id="block-info" class="cart">
+                        <div style="margin-top: 20px;background-color: rgba(75,201,249,0.3);display: none"
+                             id="block-info" class="cart">
                             <div class="precart-tittle">Add to cart</div>
                             <table class="table precart-items">
                                 <tbody class="tbody-precart-items">
@@ -258,6 +277,7 @@
             </article>
         </div>
     </div>
+    {% csrf_token %}
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript" src="{% static 'core/js/table.js' %}"></script>

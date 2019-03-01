@@ -18,11 +18,14 @@ class LimitModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
         if not change:
             table = form.cleaned_data['table']
             # привязываем к таблице новый limit
-            table.limit.add(form.instance)
+            table.limits.add(form.instance)
 
             for site in Site.objects.filter(limititem__limit__table=table).distinct():
                 limit_item = LimitItem.objects.create(site=site)
-                form.instance.item.add(limit_item)
+                form.instance.items.add(limit_item)
+
+            # для просчета приорити
+            form.instance.save()
 
 
 @admin.register(Site)
@@ -40,7 +43,10 @@ class SiteModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
             # новому сайту добавляем итемы лимитов
             for limit in Limit.objects.filter(table=table):
                 new_item = LimitItem.objects.create(site=form.instance)
-                limit.item.add(new_item)
+                limit.items.add(new_item)
+
+            # для просчета приорити
+            form.instance.save()
 
 
 @admin.register(LimitItem)
@@ -60,4 +66,17 @@ class LimitItemAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(Table)
+@admin.register(Table)
+class TableAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'is_enabled', 'priority'),
+        }),
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

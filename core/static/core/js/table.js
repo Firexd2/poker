@@ -59,6 +59,8 @@ function Table() {
                 </tr>`
     }
 
+    var cacheReadingTable;
+
     function putInfoToBlock() {
 
         $(".type-package, .tables-sizes, input[id=start_subscription], input[id=ex6], input[id=ex7], .limits-item").on('click change', function () {
@@ -67,8 +69,8 @@ function Table() {
             var table_obj = $(".tbody-precart-items");
             var block_obj = $("#block-info");
 
-            const field_for_subscription = ['Order', 'Game', 'Limits', 'Tables', 'Term', 'Start'];
-            const field_for_package = ['Order', 'Game', 'Limits', 'Tables', 'Count'];
+            const fields_for_subscription = ['Order', 'Game', 'Limits_items', 'Tables', 'Term', 'Start'];
+            const fields_for_package = ['Order', 'Game', 'Limits_items', 'Tables', 'Count'];
 
             // чистим таблицу
             table_obj.empty();
@@ -78,13 +80,13 @@ function Table() {
                 block_obj.show();
                 var type_package = $(".type-package:checked").attr('id');
                 // вычитываем таблицу
-                data = readingTable();
-                for (var name in data) {
+                cacheReadingTable = readingTable();
+                for (var name in cacheReadingTable) {
                     // определяем, какие поля показывать
-                    const available_fields = type_package === "Subscription" ? field_for_subscription : field_for_package;
+                    const available_fields = type_package === "Subscription" ? fields_for_subscription : fields_for_package;
 
                     if (available_fields.indexOf(name) !== -1) {
-                        table_obj.append(templateHtmlItem(name, data[name]))
+                        table_obj.append(templateHtmlItem(name, cacheReadingTable[name]))
                     }
                 }
             } else {
@@ -110,23 +112,30 @@ function Table() {
         // именованный массив с лимит итемами в виде site_name: item1, item2,
         var limits_items_out = {};
 
+        var limit_items_ids = [];
+
         // собираем limits_items_out
         for (let i = 0; i < limits_items_obj.length; i++) {
-            var data = limits_items_obj.eq(i).attr('id').split(':');
-            var game = data[0];
-            var limit_item = data[1];
 
-            if (!(game in limits_items_out)) {
-                limits_items_out[game] = ""
+            // в id объекта лежит информация в виде site_name:limit_item_name:limit_item_id
+            var data = limits_items_obj.eq(i).attr('id').split(':');
+            var site_name = data[0];
+            var limit_item_name = data[1];
+            var limit_item_id = data[2];
+
+            limit_items_ids.push(limit_item_id);
+
+            if (!(site_name in limits_items_out)) {
+                limits_items_out[site_name] = ""
             }
-            limits_items_out[game] += limit_item + ", "
+            limits_items_out[site_name] += limit_item_name + ", "
         }
 
         // генерируем HTML код для показа выбранных лимит итемов
         var limits_items = "";
-        for (let site_name in limits_items_out) {
-            limits_items += "<b>" + site_name + "</b>" + "<br>";
-            limits_items += "" + limits_items_out[site_name].slice(0, -2) + "<br>"
+        for (let _site_name in limits_items_out) {
+            limits_items += "<b>" + _site_name + "</b>" + "<br>";
+            limits_items += "" + limits_items_out[_site_name].slice(0, -2) + "<br>"
         }
 
         var tables_sizes = "";
@@ -143,7 +152,8 @@ function Table() {
         return {
             "Order": type_package,
             "Game": type_game,
-            "Limits": limits_items,
+            "Limits_items": limits_items,
+            "Limit_items_ids": limit_items_ids,
             "Tables": tables_sizes,
             "Term": term,
             "Start": start_subscription,
@@ -151,9 +161,20 @@ function Table() {
         }
     }
 
-    // $("#add-to-cart").on('click', function () {
-    //     console.log(ReadingTable())
-    // });
+
+    $("#add-to-cart").on('click', function () {
+        $.post("", {
+            type_package: cacheReadingTable.Order,
+            type_game: cacheReadingTable.Game,
+            limit_items_ids: cacheReadingTable.Limit_items_ids,
+            tables: cacheReadingTable.Tables,
+            term: cacheReadingTable.Term,
+            start_date: cacheReadingTable.Start,
+            count_hands: cacheReadingTable.Count
+        }, function (data) {
+            console.log(data)
+        })
+    });
 
 
     switchPackage();
@@ -161,5 +182,19 @@ function Table() {
     putInfoToBlock();
 
 }
+
+var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+
+function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrf_token);
+        }
+    }
+});
 
 Table();

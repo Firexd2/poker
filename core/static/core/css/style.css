@@ -793,7 +793,7 @@ footer a:hover {
 
 .cart-items th {
     font-weight: normal;
-    font-size: 11px;
+    font-size: 13px;
     padding: 10px 8px 10px 8px
 }
 
@@ -826,7 +826,7 @@ footer a:hover {
     float: right
 }
 
-.cart-submit button {
+.btn-sm-cart {
     margin: 7px 8px 7px 4px;
     padding: 1px 10px 1px 10px;
     font-size: 13px
