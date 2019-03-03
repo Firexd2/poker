@@ -1,22 +1,26 @@
 from django.db import models
+from django.db.models import Manager
 
-from core.mixins.models.mixins import NamedObjMixin, OnOffMixin, PriorityMixin
+from core.mixins.models.mixins import NamedObjMixin, OnOffMixin, PriorityMixin, DistinctManager
 from core.mixins.utils.mixins import name_to_url
 
 
 class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
 
     # TODO: реализовать remove (удаление итемов)
+    # необходимая мера, так как из особенного ordering (в Meta) появляются дубли
+    objects = DistinctManager()
 
     class Meta:
         verbose_name = 'Site'
         verbose_name_plural = 'Sites'
+        ordering = 'limititem__limit__table__priority', 'priority'
 
     def get_objects_in_view(self):
         """Получаем qs, откуда будем брать объекты для просчета приоритета
         """
         qs = Site.objects.filter(limititem__limit__table=self.__get_table())
-        return qs.distinct()
+        return qs
 
     def _get_limits_items(self):
         return self.limititem_set.all()
@@ -28,7 +32,7 @@ class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
 
     def __str__(self):
         try:
-            return '{} ({})'.format(self.name, self.__get_table().name)
+            return '{}: {}'.format(self.__get_table().name, self.name)
         except:
             return 'INVALID'
 
@@ -66,6 +70,7 @@ class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
     class Meta:
         verbose_name = 'Limit'
         verbose_name_plural = 'Limits'
+        ordering = 'table__priority', 'priority'
 
     def get_objects_in_view(self):
         """Получаем qs, откуда будем брать объекты для просчета приоритета
@@ -93,6 +98,7 @@ class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
     class Meta:
         verbose_name = "Table"
         verbose_name_plural = "Tables"
+        ordering = 'priority',
 
     def save(self, *args, **kwargs):
         self.name_url = name_to_url(self.name)

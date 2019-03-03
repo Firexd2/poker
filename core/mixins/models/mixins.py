@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Manager
 
 
 class NamedObjMixin(models.Model):
@@ -59,3 +60,10 @@ class PriorityMixin(models.Model):
                         pass
 
         super(PriorityMixin, self).save(*args, **kwargs)
+
+
+class DistinctManager(Manager):
+    """Manager, удаляющий дубли
+    """
+    def get_queryset(self):
+        return super(DistinctManager, self).get_queryset().distinct()

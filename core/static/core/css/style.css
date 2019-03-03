@@ -794,7 +794,9 @@ footer a:hover {
 .cart-items th {
     font-weight: normal;
     font-size: 13px;
-    padding: 10px 8px 10px 8px
+    padding: 10px 8px 10px 8px;
+    line-height: 1.5;
+    background-color: #f9f5f5;
 }
 
 .cart-items tr {
