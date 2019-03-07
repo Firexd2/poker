@@ -55,7 +55,7 @@ class LimitItemAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('is_enabled', 'price',),
+            'fields': ('is_enabled', 'price_per_month', 'price_per_100k'),
         }),
     )
 

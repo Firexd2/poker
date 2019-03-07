@@ -29,7 +29,7 @@ body {
     color: #434343;
     line-height: 22px;
     font-style: normal;
-    font-family: "PT Sans", Arial, Tahoma;
+    font-family: 'PT Sans', sans-serif;
 }
 
 .ic, .ic a {
@@ -777,14 +777,32 @@ footer a:hover {
     border: 1px solid rgba(157, 157, 157, 0.5);
     margin-top: 5px;
     position: relative;
-    padding-bottom: 50px
+    padding-bottom: 40px
 }
 
 .cart-tittle {
     font-size: 17px;
-    padding: 10px 5px 8px 8px;
+    padding: 10px 8px 8px 8px;
     background-color: rgba(0, 0, 0, .05);
-    border-bottom: 1px solid #c9c9c9
+    border-bottom: 1px solid #c9c9c9;
+    height: 25px;
+}
+
+.cart-tittle-text {
+    float: left;
+}
+
+#clear-cart {
+    text-align: center;
+    margin-top: 15px
+}
+
+.cart-tittle-btn {
+    float: right;
+}
+
+.cart-tittle-btn button {
+    margin: 0;
 }
 
 .cart-items {
@@ -795,7 +813,7 @@ footer a:hover {
     font-weight: normal;
     font-size: 13px;
     padding: 10px 8px 10px 8px;
-    line-height: 1.5;
+    line-height: 1.6;
     background-color: #f9f5f5;
 }
 
@@ -895,4 +913,21 @@ footer a:hover {
 
 .tbody-precart-items tr th:nth-child(2) {
     padding: 7px 0 0 5px !important;
+}
+
+.cart-items-footer-left {
+    float: left;
+    font-size: 15px;
+}
+
+.cart-items-footer-right {
+    float: right;
+    font-size: 15px;
+    font-weight: bold
+}
+
+.cart-items-footer-right button {
+    float: right;
+    margin: 0;
+    opacity: 0.5
 }

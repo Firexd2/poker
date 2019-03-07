@@ -14,6 +14,18 @@ function Table() {
         return dd + '.' + mm + '.' + yy;
     }
 
+    function reCalculationIdButtonsDeleteItem() {
+        const buttons = $(".cart-items-tbody").find('button[name=delete-item]');
+
+        for (let i = 0; i < buttons.length; i++) {
+            buttons.attr('id', i)
+        }
+    }
+
+    function putTotalCart(total) {
+        $('#cart-total-sum').html(total);
+    }
+
     function ranges() {
         var slider1 = new Slider("#ex6");
         slider1.on("change", function (sliderValue) {
@@ -48,7 +60,7 @@ function Table() {
     /**
      * @return {string}
      */
-    function templateHtmlItem(name, text) {
+    function templateHtmlPreCartItem(name, text) {
         return `<tr>
                     <th>
                       <span>` + name + `</span>
@@ -59,18 +71,19 @@ function Table() {
                 </tr>`
     }
 
+    // переменная, в которой хранится уже рассчитанная таблица (чтобы не просчитывать таблицу повторно при добавлении в корзину)
     var cacheReadingTable;
 
-    function putInfoToBlock() {
+    function putPreCart() {
 
-        $(".type-package, .tables-sizes, input[id=start_subscription], input[id=ex6], input[id=ex7], .limits-item").on('click change', function () {
+        function putAction() {
             var checked_tables_sizes = $(".tables-sizes:checked").length;
             var checked_limits_items = $(".limits-item:checked").length;
             var table_obj = $(".tbody-precart-items");
             var block_obj = $("#block-info");
 
-            const fields_for_subscription = ['Order', 'Game', 'Limits_items', 'Tables', 'Term', 'Start'];
-            const fields_for_package = ['Order', 'Game', 'Limits_items', 'Tables', 'Count'];
+            const fields_for_subscription = ['Order', 'Game', 'Limits', 'Tables', 'Term', 'Start'];
+            const fields_for_package = ['Order', 'Game', 'Limits', 'Tables', 'Count'];
 
             // чистим таблицу
             table_obj.empty();
@@ -86,12 +99,19 @@ function Table() {
                     const available_fields = type_package === "Subscription" ? fields_for_subscription : fields_for_package;
 
                     if (available_fields.indexOf(name) !== -1) {
-                        table_obj.append(templateHtmlItem(name, cacheReadingTable[name]))
+                        table_obj.append(templateHtmlPreCartItem(name, cacheReadingTable[name]))
                     }
                 }
             } else {
                 block_obj.hide()
             }
+        }
+
+        var time_id;
+        $(".type-package, .tables-sizes, input[id=start_subscription], input[id=ex6], input[id=ex7], .limits-item, input[name=days]").on('click input change', function () {
+            // так как обращаемся к серверу за расчетом цены, добавляем таймаут
+            clearTimeout(time_id);
+            time_id = setTimeout(putAction, 300)
         })
     }
 
@@ -104,7 +124,7 @@ function Table() {
         var tables_sizes_objs = $(".tables-sizes:checked");
 
         var start_subscription = $("input[id=start_subscription]").val();
-        var term = $("input[id=ex6]").val();
+        var term = $("input[name=days]").val();
         var number_of_hands = $("input[id=ex7]").val() + "K hands";
 
         // все отмеченные лимит итемы
@@ -152,7 +172,7 @@ function Table() {
         return {
             "Order": type_package,
             "Game": type_game,
-            "Limits_items": limits_items,
+            "Limits": limits_items,
             "Limit_items_ids": limit_items_ids,
             "Tables": tables_sizes,
             "Term": term,
@@ -161,25 +181,131 @@ function Table() {
         }
     }
 
+    /**
+     * @return {string}
+     */
+    function templateHtmlCartItem(type_package, type_game, limits_item, tables, describe_package, price) {
+        return `<tr><th>
+                  <b>` + type_package + `</b>: ` + describe_package + `;
+                  <br>
+                  <b>` + type_game + `</b>: ` + tables + `;
+                  <br>
+                  ` + limits_item + `
+                  <br>
+                  <br>
+                  <div class="cart-items-footer-left">
+                     Price: <b>` + price + `</b> $
+                  </div>
+                   <div class="cart-items-footer-right">
+                     <button type="button" name="delete-item" class="close" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                     </button>
+                   </div>
+                 </th></tr>`
+    }
 
-    $("#add-to-cart").on('click', function () {
-        $.post("", {
-            type_package: cacheReadingTable.Order,
-            type_game: cacheReadingTable.Game,
-            limit_items_ids: cacheReadingTable.Limit_items_ids,
-            tables: cacheReadingTable.Tables,
-            term: cacheReadingTable.Term,
-            start_date: cacheReadingTable.Start,
-            count_hands: cacheReadingTable.Count
-        }, function (data) {
-            console.log(data)
-        })
-    });
+    function putCart() {
 
+        $("#add-to-cart").on('click', function () {
+            const type_package = cacheReadingTable.Order;
+            const type_game = cacheReadingTable.Game;
+            const tables = cacheReadingTable.Tables;
+            const term = cacheReadingTable.Term;
+            const start_date = cacheReadingTable.Start;
+            const count_hands = cacheReadingTable.Count;
+
+            $.post("?type=add-to-cart", {
+                type_package: type_package,
+                type_game: type_game,
+                limit_items_ids: cacheReadingTable.Limit_items_ids,
+                tables: tables,
+                term: term,
+                start_date: start_date,
+                count_hands: count_hands
+            }, function (data) {
+                var describe_package;
+                var limits_item = '';
+                data = JSON.parse(data);
+
+                if (type_package === 'Subscription') {
+                    describe_package = term + ' days from ' + start_date
+                } else {
+                    describe_package = count_hands;
+                }
+
+                for (var key in data.limits_item) {
+                    limits_item += '<b>' + key + '</b> (' + data.limits_item[key] + ')<br>'
+                }
+                // удалим последний <br>
+                limits_item = limits_item.slice(0, -4);
+
+                // чистим сообщение, что корзина пуста и снимаем флаг неактивной кнопки
+                const clear_cart_obj = $('#clear-cart');
+                if (clear_cart_obj.length) {
+                    clear_cart_obj.remove();
+                    $(".cart-submit-1").children().removeClass('disabled');
+                    $(".cart-total-1").show();
+                }
+
+                // отрисовываем новый итем в корзине
+                $(".cart-items-tbody").append(templateHtmlCartItem(
+                    type_package, type_game, limits_item, tables, describe_package, data.price)
+                );
+
+                // обновляем Total
+                putTotalCart(data.total);
+
+                // скидываем pre-cart
+                $(".tbody-precart-items").empty();
+                $("#block-info").hide();
+                // скидываем все выставленные галки
+                $("input[type=checkbox]").prop('checked', false);
+                // пересчитываем id кнопок удаления
+                reCalculationIdButtonsDeleteItem()
+
+            })
+        });
+    }
+
+    function actionsCart() {
+
+        function clearCart() {
+            $(".cart-1").append('<div id="clear-cart">Cart is empty</div>');
+            $(".cart-items-tbody").html('');
+            $(".cart-total-1").hide();
+            $(".cart-submit-1").children().addClass('disabled');
+        }
+
+        $("button[name=clear-cart]").on('click', function () {
+            $.post("?type=clear-cart", {}, function (data) {
+                // чистим корзину
+                clearCart()
+            })
+        });
+
+        $("body").on('click', 'button[name=delete-item]', function () {
+            const parent = $(this).closest('tr');
+            $.post("?type=delete-item-in-cart", {item_id: $(this).attr('id')}, function (data) {
+                // если итемов больше чем 1 по итогу, подчищаем просто итем. иначе - чистим всю корзину
+                if ($(".cart-items-tbody").children().length > 1) {
+                    parent.remove();
+                    // пересчитываем id кнопок удаления
+                    reCalculationIdButtonsDeleteItem();
+
+                    data = JSON.parse(data);
+                    putTotalCart(data.total);
+                } else {
+                    clearCart()
+                }
+            })
+        });
+    }
 
     switchPackage();
     ranges();
-    putInfoToBlock();
+    putPreCart();
+    putCart();
+    actionsCart()
 
 }
 

@@ -26,7 +26,7 @@ def create_default_data(apps, schema_editor):
 
             limit_items = []
             for site_id in site_ids:
-                limit_item = LimitItem.objects.create(site_id=site_id, price=10)
+                limit_item = LimitItem.objects.create(site_id=site_id, price_per_month=10, price_per_100k=1)
                 limit_items.append(limit_item)
 
             limit.items.add(*limit_items)

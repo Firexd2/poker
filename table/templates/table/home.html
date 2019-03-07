@@ -128,7 +128,7 @@
                                             </th>
                                             <th style="text-align: right; font-weight: normal;">
                                                 <input style="padding: 0 3px 0 7px; font-size: 14px; width: 110px"
-                                                       class="form-control" type="date" value="2011-08-19"
+                                                       class="form-control" type="date" value="{% now "Y-m-d" %}"
                                                        id="start_subscription">
                                             </th>
                                         </tr>
@@ -147,12 +147,12 @@
                                                     <div class="form-group mb-2">
                                                         <input id="ex6" type="text" data-slider-min="1"
                                                                data-slider-max="360"
-                                                               data-slider-step="15" data-slider-value="1"/>
+                                                               data-slider-step="15" data-slider-value="30"/>
                                                     </div>
 
                                                     <div style="width: 108px; height: 25px; padding-left: 30px"
                                                          class="input-group mb-3">
-                                                        <input type="text" class="form-control input-sm" value="1"
+                                                        <input type="text" name="days" class="form-control input-sm" value="30"
                                                                style="padding: 0 3px 0 10px; font-size: 15px"
                                                                id="ex6SliderVal">
                                                         <div class="input-group-append">
@@ -197,14 +197,21 @@
                         </table>
                     </section>
                     <section class="col2 pad_left3">
-                        <div class="cart">
-                            <div class="cart-tittle">Cart content</div>
+                        <div class="cart cart-1">
+                            <div class="cart-tittle">
+                                <div class="cart-tittle-text">Cart content</div>
+                                <div class="cart-tittle-btn">
+                                    <button name="clear-cart" type="button" class="btn btn-outline-dark btn-sm-cart">
+                                        clear
+                                    </button>
+                                </div>
+                            </div>
                             <table class="table cart-items">
-                                <tbody>
+                                <tbody class="cart-items-tbody">
                                 {% if request.session.cart_items %}
                                     {% for item in request.session.cart_items %}
                                         <tr>
-                                            <th style="">
+                                            <th>
                                                 <b>{{ item.type_package }}</b>:
                                                 {% if item.type_package == 'Subscription' %}
                                                     {{ item.term }} days from {{ item.start_date }};
@@ -221,28 +228,29 @@
                                                     <br>
                                                 {% endfor %}
                                                 <br>
-                                                <div style="float: left; font-size: 15px; margin-top: 2px">
+                                                <div class="cart-items-footer-left">
                                                     Price: <b>{{ item.price }}</b> $
                                                 </div>
-                                                <div style="float: right; font-size: 15px; font-weight: bold">
-                                                    <button style="float: right; margin: 0; opacity: 0.5" type="button"
-                                                            class="btn btn-outline-dark btn-sm-cart">
-                                                        delete
+                                                <div class="cart-items-footer-right">
+                                                    <button type="button" name="delete-item" id="{{ forloop.counter0 }}"
+                                                            class="close"  aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
                                             </th>
                                         </tr>
                                     {% endfor %}
                                 {% else %}
-                                    <div style="text-align: center; margin-top: 20px">Cart is empty</div>
+                                    <div id="clear-cart">Cart is empty</div>
                                 {% endif %}
                                 </tbody>
                             </table>
                             <div class="cart-footer">
-                                <div {% if not request.session.cart_items %}hidden{% endif %} class="cart-total">
-                                    Total: <span>{{ request.session.total }}</span> $
+                                <div {% if not request.session.cart_items %}style="display: none" {% endif %}
+                                     class="cart-total cart-total-1">
+                                    Total: <span id="cart-total-sum">{{ request.session.total }}</span> $
                                 </div>
-                                <div class="cart-submit">
+                                <div class="cart-submit cart-submit-1">
                                     <button style="float: right" type="button"
                                             class="btn btn-success btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
                                         Checkout
@@ -250,7 +258,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="margin-top: 20px;background-color: rgba(75,201,249,0.3);display: none"
+                        <div style="margin-top: 10px;background-color: rgba(75,201,249,0.3);display: none"
                              id="block-info" class="cart">
                             <div class="precart-tittle">Add to cart</div>
                             <table class="table precart-items">

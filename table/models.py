@@ -39,7 +39,8 @@ class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
 
 class LimitItem(OnOffMixin):
 
-    price = models.IntegerField("Price", default=0)
+    price_per_month = models.IntegerField("Price per month", default=0)
+    price_per_100k = models.IntegerField("Price per 100k", default=0)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, verbose_name='Site')
 
     class Meta:
@@ -106,3 +107,8 @@ class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
 
     def __str__(self):
         return self.name
+
+
+class PriceFormationSettings(models.Model):
+    # TODO: реализовать модель, перенести весь расчет сюда
+    pass
