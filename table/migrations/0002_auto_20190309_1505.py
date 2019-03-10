@@ -17,6 +17,7 @@ def create_default_data(apps, schema_editor):
     LimitItem = apps.get_model('table', 'LimitItem')
     Limit = apps.get_model('table', 'Limit')
     Table = apps.get_model('table', 'Table')
+    PriceFormation = apps.get_model('table', 'PriceFormation')
 
     def _create_default_limits(site_ids):
         result = []
@@ -48,6 +49,9 @@ def create_default_data(apps, schema_editor):
 
         limits = _create_default_limits(sites_ids[table_name])
         table.limits.add(*limits)
+
+    # создаем дефолтную запись о формировании цены
+    PriceFormation.objects.create()
 
 
 def reverse(apps, schema_editor):

@@ -3,6 +3,13 @@ from django.db import models
 from django.db.models import Manager
 
 
+class CacheMixin(models.Model):
+    cached_methods = ()
+
+    class Meta:
+        abstract = True
+
+
 class NamedObjMixin(models.Model):
     name = models.TextField("Name", blank=True, null=True)
 
@@ -35,31 +42,35 @@ class PriorityMixin(models.Model):
         """
         return self.__class__.objects
 
-    def save(self, *args, **kwargs):
+    def save(self, auto_priority=True, *args, **kwargs):
         new_obj = not self.id
 
-        if not new_obj:
+        if not new_obj and auto_priority:
             objects = self.get_objects_in_view()
             count_objects = objects.count()
 
-            if not getattr(self, 'count_false', None):
-                if not self.priority or self.priority > count_objects:
-                    self.priority = count_objects
-                else:
-                    # вытаскиваем старый приоритет нашего объекта
-                    old_priority = objects.get(id=self.id).priority
-                    # присваиваем старый приоритет объекту, который занимает нужный приоритет
-                    try:
-                        old_object = objects.get(priority=self.priority)
-                        old_object.priority = old_priority
-                        # необходимый флаг, который говорит о том, что объекту не нужно просчитывать приоритет
-                        # (т.к. уже просчитали)
-                        setattr(old_object, 'count_false', True)
-                        old_object.save()
-                    except self.__class__.DoesNotExist:
-                        pass
+            if not self.priority or self.priority > count_objects:
+                self.priority = count_objects
+            else:
+                # вытаскиваем старый приоритет нашего объекта
+                old_priority = objects.get(id=self.id).priority
+                # присваиваем старый приоритет объекту, который занимает нужный приоритет
+                try:
+                    old_object = objects.get(priority=self.priority)
+                    old_object.priority = old_priority
+                    old_object.save(auto_priority=False)
+                except self.__class__.DoesNotExist:
+                    pass
 
         super(PriorityMixin, self).save(*args, **kwargs)
+
+    def delete(self, *args):
+        """При удалении объекта необходимо всем просчитать priority
+        """
+        for enum, obj in enumerate(self.get_objects_in_view().exclude(id=self.id), start=1):
+            obj.priority = enum
+            obj.save(auto_priority=False)
+        super(PriorityMixin, self).delete(*args)
 
 
 class DistinctManager(Manager):

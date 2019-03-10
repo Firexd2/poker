@@ -18,7 +18,7 @@ function Table() {
         const buttons = $(".cart-items-tbody").find('button[name=delete-item]');
 
         for (let i = 0; i < buttons.length; i++) {
-            buttons.attr('id', i)
+            buttons.eq(i).attr('id', i)
         }
     }
 
@@ -94,14 +94,30 @@ function Table() {
                 var type_package = $(".type-package:checked").attr('id');
                 // вычитываем таблицу
                 cacheReadingTable = readingTable();
-                for (var name in cacheReadingTable) {
+                for (let name in cacheReadingTable) {
                     // определяем, какие поля показывать
                     const available_fields = type_package === "Subscription" ? fields_for_subscription : fields_for_package;
-
                     if (available_fields.indexOf(name) !== -1) {
                         table_obj.append(templateHtmlPreCartItem(name, cacheReadingTable[name]))
                     }
                 }
+                // получаем и записываем price
+                const tables = cacheReadingTable.Tables;
+                const term = cacheReadingTable.Term;
+                const start_date = cacheReadingTable.Start;
+                const count_hands = cacheReadingTable.Count;
+                const limit_items_ids = cacheReadingTable.Limit_items_ids;
+                $.post("?type=count-price", {
+                    type_package: type_package,
+                    limit_items_ids: limit_items_ids,
+                    tables: tables,
+                    term: term,
+                    start_date: start_date,
+                    count_hands: count_hands
+                }, function (data) {
+                    data = JSON.parse(data);
+                    $('#precart-total').text(data.price)
+                })
             } else {
                 block_obj.hide()
             }
@@ -213,11 +229,12 @@ function Table() {
             const term = cacheReadingTable.Term;
             const start_date = cacheReadingTable.Start;
             const count_hands = cacheReadingTable.Count;
+            const limit_items_ids = cacheReadingTable.Limit_items_ids;
 
             $.post("?type=add-to-cart", {
                 type_package: type_package,
                 type_game: type_game,
-                limit_items_ids: cacheReadingTable.Limit_items_ids,
+                limit_items_ids: limit_items_ids,
                 tables: tables,
                 term: term,
                 start_date: start_date,
