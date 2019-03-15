@@ -1,5 +1,62 @@
 function Table() {
 
+    function templateHtmlGraphicItem(id, name, past_7, past_30) {
+        return `<div class="block-graphics-item">
+                                <div class="head-graphic">
+                                    ` + name + `
+                                    <br>
+                                    <span>(past 7 days: ` + past_7 + `; past 30 days: ` + past_30 + `)</span>
+                                </div>
+                                <div id="` + id + `" class="graphic"></div>
+                            </div>`
+    }
+
+    function templateHtmlPreCartItem(name, text) {
+        return `<tr>
+                    <th>
+                      <span>` + name + `</span>
+                    </th>
+                    <th>
+                      ` + text + `
+                    </th>
+                </tr>`
+    }
+
+    function templateHtmlCartItem(type_package, type_game, limits_item, tables, describe_package, price) {
+        return `<tr><th>
+                  <b>` + type_package + `</b>: ` + describe_package + `;
+                  <br>
+                  <b>` + type_game + `</b>: ` + tables + `;
+                  <br>
+                  ` + limits_item + `
+                  <br>
+                  <br>
+                  <div class="cart-items-footer-left">
+                     Price: <b>` + price + `</b> $
+                  </div>
+                   <div class="cart-items-footer-right">
+                     <button type="button" name="delete-item" class="close" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                     </button>
+                   </div>
+                 </th></tr>`
+    }
+
+    function print(data) {
+        console.log(data)
+    }
+
+    function valToK(val) {
+        // прим.: 5500 -> 5.5k
+        val = Math.round(val / 1000);
+        return val !== 0 ? val + 'k' : val
+    }
+
+    const block_graphic = $(".block-graphics");
+    const button_clear_cart = $('button[name=clear-cart]');
+    // переменная, в которой хранится уже рассчитанная таблица (чтобы не просчитывать таблицу повторно при добавлении в корзину)
+    var cache_reading_table;
+
     function formatDate(date) {
 
         var dd = date.getDate();
@@ -57,30 +114,77 @@ function Table() {
         })
     }
 
-    /**
-     * @return {string}
-     */
-    function templateHtmlPreCartItem(name, text) {
-        return `<tr>
-                    <th>
-                      <span>` + name + `</span>
-                    </th>
-                    <th>
-                      ` + text + `
-                    </th>
-                </tr>`
-    }
+    function drawGraphic(block_graphic, id, name, data_value) {
 
-    // переменная, в которой хранится уже рассчитанная таблица (чтобы не просчитывать таблицу повторно при добавлении в корзину)
-    var cacheReadingTable;
+        // конечные данные на графике
+        var data = [];
+        // отсчитываем месяц
+        var date = new Date();
+        date.setDate(date.getDate() - 31);
+
+        var day;
+        var month;
+
+        // формируем данные для графика
+        for (let i = 0; i < data_value.length; i++) {
+            date.setDate(date.getDate() + 1);
+
+            day = date.getDate().toString().length > 1 ? date.getDate() : "0" + date.getDate();
+            month = date.getMonth().toString().length > 1 ? date.getMonth() : "0" + date.getMonth();
+
+            data.push({day: day + '.' + month, value: data_value[i]})
+        }
+
+        // расчитываем средние значения
+        var past_30 = 0;
+        var past_7 = 0;
+
+        for (let i = 0; i < data_value.length; i++) {
+            if (i < 7) {
+                past_7 += data_value[29 - i]
+            }
+            past_30 += data_value[29 - i]
+        }
+
+        past_7 = Math.round(past_7 / 7);
+        past_30 = Math.round(past_30 / 30);
+
+        block_graphic.append(templateHtmlGraphicItem(id, name, valToK(past_7), valToK(past_30)));
+
+        Morris.Bar({
+            element: id,
+            data: data,
+            barGap: 1,
+            barSizeRatio: 0.3,
+            xkey: 'day',
+            ykeys: ['value'],
+            xLables: "day",
+            labels: ['Value'],
+            barColors: ['#47afde'],
+            hideHover: 'always',
+            padding: 20,
+            stacked: true,
+            xLabelAngle: 90,
+            gridTextSize: 9,
+            gridTextFamily: "Trebuchet MS",
+            ymax: Math.max.apply(null, data_value),
+            yLabelFormat: function (y) {
+                return valToK(y)
+            }
+
+        });
+    }
 
     function putPreCart() {
 
         function putAction() {
-            var checked_tables_sizes = $(".tables-sizes:checked").length;
-            var checked_limits_items = $(".limits-item:checked").length;
-            var table_obj = $(".tbody-precart-items");
-            var block_obj = $("#block-info");
+            // вычитываем таблицу
+            cache_reading_table = readingTable();
+
+            const checked_tables_sizes = $(".tables-sizes:checked").length;
+            const checked_limits_items = $(".limits-item:checked").length;
+            const table_obj = $(".tbody-precart-items");
+            const block_obj = $("#block-info");
 
             const fields_for_subscription = ['Order', 'Game', 'Limits', 'Tables', 'Term', 'Start'];
             const fields_for_package = ['Order', 'Game', 'Limits', 'Tables', 'Count'];
@@ -92,21 +196,20 @@ function Table() {
 
                 block_obj.show();
                 var type_package = $(".type-package:checked").attr('id');
-                // вычитываем таблицу
-                cacheReadingTable = readingTable();
-                for (let name in cacheReadingTable) {
+
+                for (let name in cache_reading_table) {
                     // определяем, какие поля показывать
                     const available_fields = type_package === "Subscription" ? fields_for_subscription : fields_for_package;
                     if (available_fields.indexOf(name) !== -1) {
-                        table_obj.append(templateHtmlPreCartItem(name, cacheReadingTable[name]))
+                        table_obj.append(templateHtmlPreCartItem(name, cache_reading_table[name]))
                     }
                 }
                 // получаем и записываем price
-                const tables = cacheReadingTable.Tables;
-                const term = cacheReadingTable.Term;
-                const start_date = cacheReadingTable.Start;
-                const count_hands = cacheReadingTable.Count;
-                const limit_items_ids = cacheReadingTable.Limit_items_ids;
+                const tables = cache_reading_table.Tables;
+                const term = cache_reading_table.Term;
+                const start_date = cache_reading_table.Start;
+                const count_hands = cache_reading_table.Count;
+                const limit_items_ids = cache_reading_table.Limit_items_ids;
                 $.post("?type=count-price", {
                     type_package: type_package,
                     limit_items_ids: limit_items_ids,
@@ -117,9 +220,45 @@ function Table() {
                 }, function (data) {
                     data = JSON.parse(data);
                     $('#precart-total').text(data.price)
+                });
+
+                // отображаем графики
+                $.post("?type=get-data-graphics", {
+                    limit_items_ids: cache_reading_table.Limit_items_ids,
+                }, function (data) {
+                    data = JSON.parse(data);
+
+                    const graphics_ids = [];
+                    var graphic_objs = $(".graphic");
+                    for (let i = 0; i < graphic_objs.length; i++) {
+                        graphics_ids.push(graphic_objs.eq(i).attr('id'))
+                    }
+
+                    var traversed_ids = [];
+                    var limit_id;
+                    for (let i = 0; i < data.length; i++) {
+                        limit_id = data[i].limit_id;
+                        if (graphics_ids.indexOf(limit_id) === -1) {
+
+                            // формируем имя
+                            const name = data[i].table + ', ' + data[i].site + ', ' + data[i].limit_name;
+
+                            drawGraphic(block_graphic, limit_id, name, data[i].array);
+                        }
+                        traversed_ids.push(limit_id)
+                    }
+                    // удаляем не нужные графики (которые не пришли с сервера)
+                    var diff = graphics_ids.filter(x => traversed_ids.indexOf(x) === -1);
+                    if (diff) {
+                        for (let i = 0; i < diff.length; i++) {
+                            $("#" + diff[i]).parent().remove()
+                        }
+                    }
+                    block_graphic.show()
                 })
             } else {
-                block_obj.hide()
+                block_obj.hide();
+                block_graphic.empty();
             }
         }
 
@@ -197,39 +336,16 @@ function Table() {
         }
     }
 
-    /**
-     * @return {string}
-     */
-    function templateHtmlCartItem(type_package, type_game, limits_item, tables, describe_package, price) {
-        return `<tr><th>
-                  <b>` + type_package + `</b>: ` + describe_package + `;
-                  <br>
-                  <b>` + type_game + `</b>: ` + tables + `;
-                  <br>
-                  ` + limits_item + `
-                  <br>
-                  <br>
-                  <div class="cart-items-footer-left">
-                     Price: <b>` + price + `</b> $
-                  </div>
-                   <div class="cart-items-footer-right">
-                     <button type="button" name="delete-item" class="close" aria-label="Close">
-                       <span aria-hidden="true">&times;</span>
-                     </button>
-                   </div>
-                 </th></tr>`
-    }
-
     function putCart() {
 
         $("#add-to-cart").on('click', function () {
-            const type_package = cacheReadingTable.Order;
-            const type_game = cacheReadingTable.Game;
-            const tables = cacheReadingTable.Tables;
-            const term = cacheReadingTable.Term;
-            const start_date = cacheReadingTable.Start;
-            const count_hands = cacheReadingTable.Count;
-            const limit_items_ids = cacheReadingTable.Limit_items_ids;
+            const type_package = cache_reading_table.Order;
+            const type_game = cache_reading_table.Game;
+            const tables = cache_reading_table.Tables;
+            const term = cache_reading_table.Term;
+            const start_date = cache_reading_table.Start;
+            const count_hands = cache_reading_table.Count;
+            const limit_items_ids = cache_reading_table.Limit_items_ids;
 
             $.post("?type=add-to-cart", {
                 type_package: type_package,
@@ -278,7 +394,11 @@ function Table() {
                 // скидываем все выставленные галки
                 $("input[type=checkbox]").prop('checked', false);
                 // пересчитываем id кнопок удаления
-                reCalculationIdButtonsDeleteItem()
+                reCalculationIdButtonsDeleteItem();
+                // чистим графики
+                block_graphic.empty();
+                // включаем кнопку clear
+                button_clear_cart.removeClass('disabled')
 
             })
         });
@@ -291,13 +411,16 @@ function Table() {
             $(".cart-items-tbody").html('');
             $(".cart-total-1").hide();
             $(".cart-submit-1").children().addClass('disabled');
+            button_clear_cart.addClass('disabled')
         }
 
-        $("button[name=clear-cart]").on('click', function () {
-            $.post("?type=clear-cart", {}, function (data) {
-                // чистим корзину
-                clearCart()
-            })
+        button_clear_cart.on('click', function () {
+            if (!($(this).hasClass('disabled'))) {
+                $.post("?type=clear-cart", {}, function (data) {
+                    // чистим корзину
+                    clearCart()
+                })
+            }
         });
 
         $("body").on('click', 'button[name=delete-item]', function () {
@@ -326,6 +449,7 @@ function Table() {
 
 }
 
+// настройки csrf_token
 var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 
 function csrfSafeMethod(method) {

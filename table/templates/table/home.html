@@ -152,7 +152,8 @@
 
                                                     <div style="width: 108px; height: 25px; padding-left: 30px"
                                                          class="input-group mb-3">
-                                                        <input type="text" name="days" class="form-control input-sm" value="30"
+                                                        <input type="text" name="days" class="form-control input-sm"
+                                                               value="30"
                                                                style="padding: 0 3px 0 10px; font-size: 15px"
                                                                id="ex6SliderVal">
                                                         <div class="input-group-append">
@@ -201,7 +202,7 @@
                             <div class="cart-tittle">
                                 <div class="cart-tittle-text">Cart content</div>
                                 <div class="cart-tittle-btn">
-                                    <button name="clear-cart" type="button" class="btn btn-outline-dark btn-sm-cart">
+                                    <button name="clear-cart" type="button" class="btn btn-outline-dark btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
                                         clear
                                     </button>
                                 </div>
@@ -233,7 +234,7 @@
                                                 </div>
                                                 <div class="cart-items-footer-right">
                                                     <button type="button" name="delete-item" id="{{ forloop.counter0 }}"
-                                                            class="close"  aria-label="Close">
+                                                            class="close" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
@@ -258,8 +259,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="margin-top: 10px;background-color: rgba(75,201,249,0.3);display: none"
-                             id="block-info" class="cart">
+                        <div id="block-info" style="background-color: rgba(75,201,249,0.3);" class="cart block-hide">
                             <div class="precart-tittle">Add to cart</div>
                             <table class="table precart-items">
                                 <tbody class="tbody-precart-items">
@@ -276,6 +276,8 @@
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                        <div style="display: block;" class="block-hide block-graphics">
                         </div>
                     </section>
                 </div>

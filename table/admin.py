@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
 
-from core.mixins.admin.forms import ModelAdminFieldSetsMixin
-from core.mixins.utils.mixins import make_enabled, make_disabled
-from table.admin_forms import LimitModelForm, SiteModelForm
-from table.models import Limit, LimitItem, Site, Table, PriceFormation
+from core.tools.mixins.admin import ModelAdminFieldSetsMixin
+from core.tools.utils import make_enabled, make_disabled
+from table.admin_forms import LimitModelForm, SiteModelForm, StatisticLimitModelForm
+from table.models import Limit, LimitItem, Site, Table, PriceFormation, StatisticLimitItem
 
 
 class CustomAdmin(AdminSite):
+
     site_title = 'Administration'
     site_header = 'Poker stat administration'
     index_title = 'Management'
@@ -19,6 +20,7 @@ class CustomAdmin(AdminSite):
             Site._meta.verbose_name_plural,
             Limit._meta.verbose_name_plural,
             LimitItem._meta.verbose_name_plural,
+            StatisticLimitItem._meta.verbose_name_plural,
             PriceFormation._meta.verbose_name_plural
         )
         order_rank = {key_val.lower(): rank for rank, key_val in enumerate(_order)}
@@ -55,9 +57,12 @@ class LimitModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
             form.instance.save()
 
     def delete_model(self, request, obj):
-        items = obj.items.all()
+        # сохраняем ids, так как из-за ленивости queryset'а после удаления объекта он здесь будет пустой
+        items_ids = [item.id for item in obj.items.all()]
+
         super(LimitModelAdmin, self).delete_model(request, obj)
-        items.delete()
+
+        LimitItem.objects.filter(id__in=items_ids).delete()
 
 
 @admin.register(Site, site=admin_site)
@@ -93,6 +98,17 @@ class LimitItemAdmin(admin.ModelAdmin):
             'fields': ('is_enabled', 'price_per_month', 'price_per_100k'),
         }),
     )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(StatisticLimitItem, site=admin_site)
+class StatisticLimitItemAdmin(admin.ModelAdmin):
+    form = StatisticLimitModelForm
 
     def has_add_permission(self, request):
         return False

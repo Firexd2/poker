@@ -931,3 +931,37 @@ footer a:hover {
     margin: 0;
     opacity: 0.5
 }
+
+.block-hide {
+    margin-top: 10px;
+    display: none
+}
+
+.block-graphics {
+    width: 100%;
+}
+
+.block-graphics-item {
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+}
+
+.graphic {
+    min-height: 250px;
+    margin-top: 10px;
+    margin-bottom: -10px;
+}
+
+.head-graphic {
+    margin-bottom: -10px;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.head-graphic span {
+    font-size: 12px;
+    font-style: italic;
+}

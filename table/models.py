@@ -1,14 +1,12 @@
+from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.db.models import Manager
 
-from core.mixins.models.mixins import NamedObjMixin, OnOffMixin, PriorityMixin, DistinctManager
-from core.mixins.utils.mixins import name_to_url
+from core.tools.mixins.models import NamedObjMixin, OnOffMixin, PriorityMixin, DistinctManager, ClearCacheMixin
+from core.tools.utils import name_to_url
 
 
-class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
-
-    # TODO: реализовать remove (удаление итемов)
+class Site(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
     # необходимая мера, так как из особенного ordering (в Meta) появляются дубли
     objects = DistinctManager()
 
@@ -16,6 +14,18 @@ class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
         verbose_name = 'Site'
         verbose_name_plural = 'Sites'
         ordering = 'limititem__limit__table__priority', 'priority'
+
+    @staticmethod
+    def get_cached_sites_for_table(type_table):
+
+        # name_func = 'get_cached_sites_for_table'
+        #
+        # result = cache.get(name_func)
+        # if not result:
+        #     result = Site.objects.filter(limititem__limit__table__name_url=type_table)
+        #     cache.set(name_func, result)
+
+        return Site.objects.filter(limititem__limit__table__name_url=type_table)
 
     def get_objects_in_view(self):
         """Получаем qs, откуда будем брать объекты для просчета приоритета
@@ -38,11 +48,34 @@ class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
             return 'INVALID'
 
 
-class LimitItem(OnOffMixin):
+class StatisticLimitItem(models.Model):
+    """Статистические данные для отображения графиков для каждого лимит итема
+    Во многом временное решение, так как пока нет данных, с которых можно будет парсить настоящую информацию
 
+    Под array_count_hands лежит массив данных в виде строки через запятую. Каждый элемент - количество рук в день.
+    Дни расчитываются на клиенте следующим образом: из текущего дня вычитаем один день - это последний
+    элемент array_count_hands, и так далее
+    """
+
+    _default_count_hands = 30
+    # должен иметь вид 'number0, number1, number2, ..., number14'
+    array_count_hands = models.TextField("Array count hands", default=', '.join(['0'] * _default_count_hands))
+
+    min_value = models.IntegerField('Minimum value', default=0)
+    max_value = models.IntegerField('Maximum value', default=0)
+
+    date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Statistic Limit Item'
+        verbose_name_plural = 'Statistics Limit Item'
+
+
+class LimitItem(OnOffMixin):
     price_per_month = models.IntegerField("Price per month", default=0)
     price_per_100k = models.IntegerField("Price per 100k", default=0)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, verbose_name='Site')
+    stat = models.OneToOneField(StatisticLimitItem, verbose_name='Statistics', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Limit item'
@@ -63,14 +96,24 @@ class LimitItem(OnOffMixin):
             return 'INVALID'
 
 
-class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
-
+class Limit(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
     items = models.ManyToManyField(LimitItem, verbose_name='Item', blank=True)
 
     class Meta:
         verbose_name = 'Limit'
         verbose_name_plural = 'Limits'
         ordering = 'table__priority', 'priority'
+
+    @staticmethod
+    def get_cached_enabled_limits_for_table(type_table):
+        # name_func = 'get_cache_enabled_limits_for_table' + type_table
+        #
+        # result = cache.get(name_func)
+        # if not result:
+        #     result = Limit.objects.filter(is_enabled=True, table__name_url=type_table)
+        #     cache.set(name_func, result)
+
+        return Limit.objects.filter(is_enabled=True, table__name_url=type_table)
 
     def get_objects_in_view(self):
         """Получаем qs, откуда будем брать объекты для просчета приоритета
@@ -91,7 +134,7 @@ class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
             return 'INVALID'
 
 
-class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
+class Table(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
     limits = models.ManyToManyField('Limit', verbose_name='Limits', blank=True)
     name_url = models.TextField('URL name', blank=True)
 
@@ -99,6 +142,17 @@ class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
         verbose_name = "Table"
         verbose_name_plural = "Tables"
         ordering = 'priority',
+
+    @staticmethod
+    def get_cached_enabled_tables():
+        # name_func = 'get_cached_enabled_tables'
+        #
+        # result = cache.get(name_func)
+        # if not result:
+        #     result = Table.objects.filter(is_enabled=True)
+        #     cache.set(name_func, result)
+
+        return Table.objects.filter(is_enabled=True)
 
     def save(self, *args, **kwargs):
         self.name_url = name_to_url(self.name)
@@ -132,11 +186,11 @@ class PriceFormation(models.Model):
         """Обработка пришедших с клиента данных для расчетов
         """
         return (
-            args['type_package'].lower(), # raw: str
-            args['qs_limits_items'], # queryset
+            args['type_package'].lower(),  # raw: str
+            args['qs_limits_items'],  # queryset
             int(args['term']),
-            int(args['count_hands'].split('K')[0]) / 100, # raw: '100K hands'
-            len(args['count_tables'].split(',')) # raw: 'Heads up, Fullring'
+            int(args['count_hands'].split('K')[0]) / 100,  # raw: '100K hands'
+            len(args['count_tables'].split(','))  # raw: 'Heads up, Fullring'
         )
 
     @classmethod
@@ -168,6 +222,8 @@ class PriceFormation(models.Model):
     def calculate_order(cls, type_package, qs_limits_items, term, count_hands, count_tables):
         """Рассчитывает стоимость выбранных лимитов
         """
+        # TODO: locals -> *args
+
         # обрабатываем сырые данные пришедшие с клиента для дальнейших расчетов
         type_package, qs_limits_items, term, count_hands, count_tables = cls._clean_data(locals())
 
@@ -215,7 +271,8 @@ class PriceFormation(models.Model):
                 price_per_100k = limit_item.price_per_100k
                 next_100k_hands_discount_as_dozens = 1 - instance.next_100k_hands_discount * 0.01
                 # первые 100k рук - без скидки, остальные со скидкой
-                intermediate_result += price_per_100k + price_per_100k * (count_hands - 1) * next_100k_hands_discount_as_dozens
+                intermediate_result += price_per_100k + price_per_100k * (
+                            count_hands - 1) * next_100k_hands_discount_as_dozens
                 # за каждый стол умножаем цену
                 intermediate_result *= count_tables
 
