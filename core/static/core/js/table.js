@@ -169,9 +169,8 @@ function Table() {
             gridTextFamily: "Trebuchet MS",
             ymax: Math.max.apply(null, data_value),
             yLabelFormat: function (y) {
-                return valToK(y)
+                return Math.round(y)
             }
-
         });
     }
 
@@ -239,7 +238,6 @@ function Table() {
                     for (let i = 0; i < data.length; i++) {
                         limit_id = data[i].limit_id;
                         if (graphics_ids.indexOf(limit_id) === -1) {
-
                             // формируем имя
                             const name = data[i].table + ', ' + data[i].site + ', ' + data[i].limit_name;
 

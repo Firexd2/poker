@@ -1,9 +1,9 @@
-from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from core.tools.mixins.models import NamedObjMixin, OnOffMixin, PriorityMixin, DistinctManager, ClearCacheMixin
 from core.tools.utils import name_to_url
+import random
 
 
 class Site(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
@@ -53,10 +53,9 @@ class StatisticLimitItem(models.Model):
     Во многом временное решение, так как пока нет данных, с которых можно будет парсить настоящую информацию
 
     Под array_count_hands лежит массив данных в виде строки через запятую. Каждый элемент - количество рук в день.
-    Дни расчитываются на клиенте следующим образом: из текущего дня вычитаем один день - это последний
+    Эти данные расчитываются на клиенте следующим образом: из текущего дня вычитаем один день - это последний
     элемент array_count_hands, и так далее
     """
-
     _default_count_hands = 30
     # должен иметь вид 'number0, number1, number2, ..., number14'
     array_count_hands = models.TextField("Array count hands", default=', '.join(['0'] * _default_count_hands))
@@ -70,6 +69,26 @@ class StatisticLimitItem(models.Model):
         verbose_name = 'Statistic Limit Item'
         verbose_name_plural = 'Statistics Limit Item'
 
+    def __str__(self):
+        # TODO: для отладки
+        try:
+            return 'Table: {}; Limit: {}; Site: {}'.format(
+                self.limititem._get_limit()._get_table(),
+                self.limititem._get_limit().name,
+                self.limititem.site.name
+            )
+        except:
+            return 'INVALID'
+
+    def save(self, *args, **kwargs):
+
+        if self.array_count_hands.lower() == 'auto':
+            res = []
+            for n in list(range(self._default_count_hands)):
+                res.append(str(random.randint(self.min_value, self.max_value)))
+            self.array_count_hands = ', '.join(res)
+
+        super(StatisticLimitItem, self).save(*args, **kwargs)
 
 class LimitItem(OnOffMixin):
     price_per_month = models.IntegerField("Price per month", default=0)
@@ -182,15 +201,15 @@ class PriceFormation(models.Model):
         return cls.objects.first()
 
     @staticmethod
-    def _clean_data(args):
+    def _clean_data(**kwargs):
         """Обработка пришедших с клиента данных для расчетов
         """
         return (
-            args['type_package'].lower(),  # raw: str
-            args['qs_limits_items'],  # queryset
-            int(args['term']),
-            int(args['count_hands'].split('K')[0]) / 100,  # raw: '100K hands'
-            len(args['count_tables'].split(','))  # raw: 'Heads up, Fullring'
+            kwargs['type_package'].lower(),  # raw: str
+            kwargs['qs_limits_items'],  # queryset
+            int(kwargs['term']),
+            int(kwargs['count_hands'].split('K')[0]) / 100,  # raw: '100K hands'
+            len(kwargs['count_tables'].split(','))  # raw: 'Heads up, Fullring'
         )
 
     @classmethod
@@ -219,13 +238,11 @@ class PriceFormation(models.Model):
                 return str_number + "0"
 
     @classmethod
-    def calculate_order(cls, type_package, qs_limits_items, term, count_hands, count_tables):
+    def calculate_order(cls, **kwargs):
         """Рассчитывает стоимость выбранных лимитов
         """
-        # TODO: locals -> *args
-
         # обрабатываем сырые данные пришедшие с клиента для дальнейших расчетов
-        type_package, qs_limits_items, term, count_hands, count_tables = cls._clean_data(locals())
+        type_package, qs_limits_items, term, count_hands, count_tables = cls._clean_data(**kwargs)
 
         # наши настройки формирования цены
         instance = cls._get_instance()

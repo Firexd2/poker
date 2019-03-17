@@ -1,6 +1,7 @@
 from django import forms
 
 from core.tools.mixins.admin import ModelFormTableMixin
+from core.tools.utils import array_count_validator
 from table.models import Limit, Site, StatisticLimitItem
 from datetime import datetime
 import random
@@ -8,11 +9,23 @@ import random
 
 class StatisticLimitModelForm(forms.ModelForm):
 
-    array_count_hands = forms.CharField(required=True) # TODO: написать валидатор для проверки
+    array_count_hands = forms.CharField(
+        required=True, help_text='If enter "auto" then values will have count automatic between min and max value.',
+        validators=[array_count_validator], widget=forms.Textarea(attrs={'cols': '80', 'rows': '2'}))
 
     class Meta:
         model = StatisticLimitItem
         exclude = []
+
+    def clean(self):
+        cleaned_data = super(StatisticLimitModelForm, self).clean()
+
+        min_value = cleaned_data.get('min_value')
+        max_value = cleaned_data.get('max_value')
+        if min_value >= max_value:
+            self.add_error(None, 'Min and max value: ERROR.')
+
+        return cleaned_data
 
     def _get_list_array(self):
         return list(map(int, self.instance.array_count_hands.split(',')))

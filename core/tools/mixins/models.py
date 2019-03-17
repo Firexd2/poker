@@ -38,7 +38,7 @@ class PriorityMixin(models.Model):
     Для объектов, которые могут создаваться и у которых в save_related ModelAdmin идёт добавление связанных объектов,
     потребуется повторный вызов save() для просчета priority
     """
-    priority = models.IntegerField(validators=[MinValueValidator(1)], blank=True)
+    priority = models.IntegerField(validators=[MinValueValidator(1)], null=True, blank=True)
 
     class Meta:
         abstract = True

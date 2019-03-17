@@ -1,0 +1,37 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Order</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/reset.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'core/css/layout.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}" type="text/css" media="all">
+</head>
+<body class="body-order" style="background: white;">
+<div class="base-cart cart-1 block-order">
+    <div class="cart-tittle">
+        <div class="cart-tittle-text">Order</div>
+    </div>
+    <div class="cart-body">
+
+    </div>
+    <div class="block-order-footer">
+        <div class="cart-submit cart-submit-1">
+            <button style="float: right" type="button"
+                    class="btn btn-success btn-sm btn-order">
+                To do order
+            </button>
+            <button style="float: right" type="button"
+                    class="btn btn-outline-secondary btn-sm btn-order">
+                Back to table
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

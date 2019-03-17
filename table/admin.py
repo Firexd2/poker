@@ -49,20 +49,22 @@ class LimitModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
             # привязываем к таблице новый limit
             table.limits.add(form.instance)
 
-            for site in Site.objects.filter(limititem__limit__table=table).distinct():  # TODO: need distinct?
-                limit_item = LimitItem.objects.create(site=site)
-                form.instance.items.add(limit_item)
+            for site in Site.objects.filter(limititem__limit__table=table):
+                stat = StatisticLimitItem.objects.create()
+                new_item = LimitItem.objects.create(site=site, stat=stat)
+                form.instance.items.add(new_item)
 
             # для просчета приорити
             form.instance.save()
 
     def delete_model(self, request, obj):
         # сохраняем ids, так как из-за ленивости queryset'а после удаления объекта он здесь будет пустой
-        items_ids = [item.id for item in obj.items.all()]
-
+        limit_items_ids = [item.id for item in obj.items.all()]
+        stat_ids = [item.stat.id for item in obj.items.all()]
         super(LimitModelAdmin, self).delete_model(request, obj)
 
-        LimitItem.objects.filter(id__in=items_ids).delete()
+        StatisticLimitItem.objects.filter(id__in=stat_ids).delete()
+        LimitItem.objects.filter(id__in=limit_items_ids).delete()
 
 
 @admin.register(Site, site=admin_site)
@@ -77,7 +79,8 @@ class SiteModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
 
             # новому сайту добавляем итемы лимитов
             for limit in Limit.objects.filter(table=table):
-                new_item = LimitItem.objects.create(site=form.instance)
+                stat = StatisticLimitItem.objects.create()
+                new_item = LimitItem.objects.create(site=form.instance, stat=stat)
                 limit.items.add(new_item)
 
             # для просчета приорити
@@ -85,7 +88,10 @@ class SiteModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
 
     def delete_model(self, request, obj):
         limits_items = obj._get_limits_items()
+        stat_ids = [item.stat.id for item in limits_items]
         super(SiteModelAdmin, self).delete_model(request, obj)
+
+        StatisticLimitItem.objects.filter(id__in=stat_ids).delete()
         limits_items.delete()
 
 

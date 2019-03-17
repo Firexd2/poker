@@ -113,7 +113,6 @@ class TableView(TemplateView):
     def _write_data_graphics(self):
         """Записывает информацию о статистике лимитов для построения графиков на клиенте
         """
-
         limit_item_ids = self.request.POST.getlist('limit_items_ids[]')
         if limit_item_ids:
             # теперь переменная нужна как список

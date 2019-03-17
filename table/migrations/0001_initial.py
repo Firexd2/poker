@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(blank=True, null=True, verbose_name='Name')),
                 ('is_enabled', models.BooleanField(default=True, verbose_name='Enabled')),
-                ('priority', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(1)])),
+                ('priority', models.IntegerField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(1)])),
             ],
             options={
                 'verbose_name': 'Limit',
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(blank=True, null=True, verbose_name='Name')),
                 ('is_enabled', models.BooleanField(default=True, verbose_name='Enabled')),
-                ('priority', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(1)])),
+                ('priority', models.IntegerField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(1)])),
             ],
             options={
                 'verbose_name': 'Site',
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(blank=True, null=True, verbose_name='Name')),
                 ('is_enabled', models.BooleanField(default=True, verbose_name='Enabled')),
-                ('priority', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(1)])),
+                ('priority', models.IntegerField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(1)])),
                 ('name_url', models.TextField(blank=True, verbose_name='URL name')),
                 ('limits', models.ManyToManyField(blank=True, to='table.Limit', verbose_name='Limits')),
             ],
