@@ -1,21 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Manager
-from django.core.cache import cache
-
-
-class ClearCacheMixin(models.Model):
-
-    def save(self, *args, **kwargs):
-        cache.clear()
-        super(ClearCacheMixin, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        cache.clear()
-        super(ClearCacheMixin, self).delete(*args, **kwargs)
-
-    class Meta:
-        abstract = True
 
 
 class NamedObjMixin(models.Model):

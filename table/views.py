@@ -3,11 +3,13 @@ import json
 from django.http import HttpResponse
 from django.views.generic import TemplateView
 
+from core.models import Contact
 from table.models import Limit, Site, Table, LimitItem, PriceFormation, StatisticLimitItem
 from table.admin_forms import StatisticLimitModelForm
 
 
 # TODO: рефакторинг
+# TODO: базовую вью
 class TableView(TemplateView):
     template_name = 'table/home.html'
 
@@ -27,6 +29,8 @@ class TableView(TemplateView):
         context['sites'] = Site.get_cached_sites_for_table(type_table)
         context['limits'] = limits
         context['tables'] = tables
+        context['price_formation'] = PriceFormation.objects.first()
+        context['contacts'] = Contact.objects.all() # TODO работать на остальных страницах не будет (сделать общую view)
 
         from django.db import connection
         print(len(connection.queries), 'queries')
@@ -52,9 +56,13 @@ class TableView(TemplateView):
         del self.request.session['cart_items'][int(item_id)]
         self._write_total_cart()
 
-    def _clear_cart(self):
+    @staticmethod
+    def clear_cart(self):
+        """Метод вызывается из TableView и из OrderView
+        """
         try:
             del self.request.session['cart_items']
+            del self.request.session['ids']
         except KeyError:
             pass
 
@@ -64,6 +72,7 @@ class TableView(TemplateView):
         self.written_data = self.request.POST.copy()
 
         self._write_price()
+        self._write_limits_items_ids()
         self._write_dict_limits_items()
 
         if 'cart_items' not in self.request.session:
@@ -75,6 +84,11 @@ class TableView(TemplateView):
 
         # обновляем общую сумму корзины
         self._write_total_cart()
+
+    def _write_limits_items_ids(self):
+        """Просто записывает id лимитов в сессию
+        """
+        self.request.session['ids'] = self.request.POST.getlist('limit_items_ids[]')
 
     def _write_price(self):
         """Расчитывает цену по входным данным
@@ -136,7 +150,7 @@ class TableView(TemplateView):
         elif type == 'delete-item-in-cart':
             self._delete_item_in_cart()
         elif type == 'clear-cart':
-            self._clear_cart()
+            self.clear_cart(self)
         elif type == 'count-price':
             self._write_price()
         elif type == 'get-data-graphics':

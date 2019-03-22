@@ -13,35 +13,6 @@
         <div class="main-template">
             <!-- content -->
             <article id="content-template">
-                {#                <div class="wrapper">#}
-                {#                    <section class="cols">#}
-                {#                        <h3><span class="dropcap">A</span>Business<span>planning</span></h3>#}
-                {#                        <p class="pad_bot1">Progress is one of <a#}
-                {#                                href="http://blog.templatemonster.com/free-website-templates/" target="_blank">free#}
-                {#                            website templates</a> created by TemplateMonster.com, optimized for 1024x768 res.</p>#}
-                {#                        <a href="#" class="link1">Read More</a>#}
-                {#                    </section>#}
-                {#                    <section class="cols pad_left1">#}
-                {#                        <h3><span class="dropcap">B</span>Business<span>strategies</span></h3>#}
-                {#                        <p class="pad_bot1">This <a#}
-                {#                                href="http://blog.templatemonster.com/2011/07/11/free-website-template-slider-typography/"#}
-                {#                                target="_blank" rel="nofollow">Progress Template</a> goes with two packages – with PSD#}
-                {#                            source files and without them.</p>#}
-                {#                        <a href="#" class="link1">Read More</a>#}
-                {#                    </section>#}
-                {#                    <section class="cols pad_left1">#}
-                {#                        <h3><span class="dropcap">C</span>Powerful<span>analytics</span></h3>#}
-                {#                        <p class="pad_bot1">PSD source files are available for free for registered members. The basic#}
-                {#                            package is available for anyone.</p>#}
-                {#                        <a href="#" class="link1">Read More</a>#}
-                {#                    </section>#}
-                {#                    <section class="cols pad_left1">#}
-                {#                        <h3><span class="dropcap">D</span>Worldwide<span>solutions</span></h3>#}
-                {#                        <p class="pad_bot1">This website template has several pages: Home, News, Services, Products,#}
-                {#                            Contacts (contact form doesn’t work).</p>#}
-                {#                        <a href="#" class="link1">Read More</a>#}
-                {#                    </section>#}
-                {#                </div>#}
                 <hr style="border-top: 1px solid white; ">
                 <div class="wrapper">
                     <section style="padding-top: 5px" class="col1">
@@ -123,7 +94,7 @@
                                     <table class="table table-border table-slide">
                                         <thead>
                                         <tr>
-                                            <th>
+                                            <th width="138">
                                                 Start subscription:
                                             </th>
                                             <th style="text-align: right; font-weight: normal;">
@@ -198,11 +169,27 @@
                         </table>
                     </section>
                     <section class="col2 pad_left3">
+                        <table class="advantages">
+                            <tbody>
+                            <tr>
+                                <th>
+                                    <span class="procent">-{{ price_formation.next_limit_discount }}%</span> <span class="adv-text">next <br> limit</span>
+                                </th>
+                                <th>
+                                    <span class="procent">-{{ price_formation.next_month_discount }}%</span> <span class="adv-text">next <br> month</span>
+                                </th>
+                                <th>
+                                    <span class="procent">-{{ price_formation.next_100k_hands_discount }}%</span> <span class="adv-text">next <br> 100k</span>
+                                </th>
+                            </tr>
+                            </tbody>
+                        </table>
                         <div class="base-cart cart cart-1">
                             <div class="cart-tittle">
                                 <div class="cart-tittle-text">Cart content</div>
                                 <div class="cart-tittle-btn">
-                                    <button name="clear-cart" type="button" class="btn btn-outline-dark btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
+                                    <button name="clear-cart" type="button"
+                                            class="btn btn-outline-dark btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
                                         clear
                                     </button>
                                 </div>
@@ -252,14 +239,16 @@
                                     Total: <span id="cart-total-sum">{{ request.session.total }}</span> $
                                 </div>
                                 <div class="cart-submit cart-submit-1">
-                                    <button style="float: right" type="button"
+                                    <button style="float: right"
+                                            onclick="if (!($(this).hasClass('disabled'))){location.href='/order'}"
+                                            type="button"
                                             class="btn btn-success btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
-                                        Checkout
+                                        Make order
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div id="block-info" style="background-color: rgba(75,201,249,0.3);" class="cart block-hide">
+                        <div id="block-info" class="cart block-hide precart">
                             <div class="precart-tittle">Add to cart</div>
                             <table class="table precart-items">
                                 <tbody class="tbody-precart-items">

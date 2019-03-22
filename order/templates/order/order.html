@@ -13,25 +13,80 @@
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}" type="text/css" media="all">
 </head>
 <body class="body-order" style="background: white;">
-<div class="base-cart cart-1 block-order">
-    <div class="cart-tittle">
-        <div class="cart-tittle-text">Order</div>
-    </div>
-    <div class="cart-body">
-
-    </div>
-    <div class="block-order-footer">
-        <div class="cart-submit cart-submit-1">
-            <button style="float: right" type="button"
-                    class="btn btn-success btn-sm btn-order">
-                To do order
-            </button>
-            <button style="float: right" type="button"
-                    class="btn btn-outline-secondary btn-sm btn-order">
-                Back to table
-            </button>
+<form method="POST">{% csrf_token %}
+    <div class="base-cart cart-1 block-order">
+        <div class="cart-tittle">
+            <div class="cart-tittle-text">Making order</div>
+        </div>
+        <div class="cart-body">
+            <span class="form-errors">{{ form.non_field_errors }}</span>
+            <div class="left-right-cart-body left-cart-body">
+                <div class="left-title">
+                    Used payment system:
+                </div>
+                <div class="payments">
+                    <span class="form-errors">{{ form.payment.errors }}</span>
+                    <ul id="id_payment">
+                        {% for item in form.type_payment_qs %}
+                            <li class="li-payment"><label class="label-payment" for="id_payment_{{ forloop.counter0 }}">
+                                <input name="payment"
+                                       value="{{ forloop.counter }}"
+                                       required=""
+                                       id="id_payment_{{ forloop.counter0 }}"
+                                       type="radio">
+                                {{ item.name }}</label>
+                            </li>
+                            <div class="info-payment">
+                                <div class="details">Our details: {{ item.payment_details }}</div>
+                                {% if item.description %}
+                                    <div class="description">Description: {{ item.description }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="left-right-cart-body right-cart-body">
+                <div class="inputs">
+                    <span class="form-errors">{{ form.email.errors }}</span>
+                    <label for="">
+                        <span>Your e-mail:</span>
+                        {{ form.email }}
+                    </label>
+                    <span class="form-errors">{{ form.name.errors }}</span>
+                    <label for="">
+                        <span>Your name:</span>
+                        {{ form.name }}
+                    </label>
+                </div>
+                <div class="instruction">
+                    <div class="tittle">
+                        Instruction
+                    </div>
+                    <div class="body">
+                        What makes every American a typical one is a desire to get a well-paid job that will cover their
+                        credit card. A <b>credit card is an indispensable</b> part of life in America. In other words,
+                        any American
+                        knows that how he or she handles their credit card or cards, either will help them or haunt them
+                        for
+                        years.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="block-order-footer">
+            <div class="cart-submit cart-submit-1">
+                <button style="float: right" type="submit"
+                        class="btn btn-success btn-sm btn-order">
+                    Make order
+                </button>
+                <button style="float: right" onclick="location.href = '/'" type="button"
+                        class="btn btn-outline-secondary btn-sm btn-order">
+                    Back to table
+                </button>
+            </div>
         </div>
     </div>
-</div>
+</form>
 </body>
 </html>

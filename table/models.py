@@ -1,12 +1,15 @@
+import random
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from core.tools.mixins.models import NamedObjMixin, OnOffMixin, PriorityMixin, DistinctManager, ClearCacheMixin
+from core.tools.decorators import cached_decorator
+from core.tools.mixins.models import NamedObjMixin, OnOffMixin, PriorityMixin, DistinctManager
 from core.tools.utils import name_to_url
-import random
 
 
-class Site(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
+@cached_decorator(['get_cached_sites_for_table'])
+class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
     # необходимая мера, так как из особенного ordering (в Meta) появляются дубли
     objects = DistinctManager()
 
@@ -17,14 +20,6 @@ class Site(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
 
     @staticmethod
     def get_cached_sites_for_table(type_table):
-
-        # name_func = 'get_cached_sites_for_table'
-        #
-        # result = cache.get(name_func)
-        # if not result:
-        #     result = Site.objects.filter(limititem__limit__table__name_url=type_table)
-        #     cache.set(name_func, result)
-
         return Site.objects.filter(limititem__limit__table__name_url=type_table)
 
     def get_objects_in_view(self):
@@ -90,6 +85,7 @@ class StatisticLimitItem(models.Model):
 
         super(StatisticLimitItem, self).save(*args, **kwargs)
 
+
 class LimitItem(OnOffMixin):
     price_per_month = models.IntegerField("Price per month", default=0)
     price_per_100k = models.IntegerField("Price per 100k", default=0)
@@ -115,7 +111,8 @@ class LimitItem(OnOffMixin):
             return 'INVALID'
 
 
-class Limit(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
+@cached_decorator(['get_cached_enabled_limits_for_table'])
+class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
     items = models.ManyToManyField(LimitItem, verbose_name='Item', blank=True)
 
     class Meta:
@@ -125,13 +122,6 @@ class Limit(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
 
     @staticmethod
     def get_cached_enabled_limits_for_table(type_table):
-        # name_func = 'get_cache_enabled_limits_for_table' + type_table
-        #
-        # result = cache.get(name_func)
-        # if not result:
-        #     result = Limit.objects.filter(is_enabled=True, table__name_url=type_table)
-        #     cache.set(name_func, result)
-
         return Limit.objects.filter(is_enabled=True, table__name_url=type_table)
 
     def get_objects_in_view(self):
@@ -153,7 +143,8 @@ class Limit(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
             return 'INVALID'
 
 
-class Table(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
+@cached_decorator(['get_cached_enabled_tables'])
+class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
     limits = models.ManyToManyField('Limit', verbose_name='Limits', blank=True)
     name_url = models.TextField('URL name', blank=True)
 
@@ -164,13 +155,6 @@ class Table(ClearCacheMixin, PriorityMixin, NamedObjMixin, OnOffMixin):
 
     @staticmethod
     def get_cached_enabled_tables():
-        # name_func = 'get_cached_enabled_tables'
-        #
-        # result = cache.get(name_func)
-        # if not result:
-        #     result = Table.objects.filter(is_enabled=True)
-        #     cache.set(name_func, result)
-
         return Table.objects.filter(is_enabled=True)
 
     def save(self, *args, **kwargs):

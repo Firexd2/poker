@@ -18,8 +18,6 @@
     <link rel="stylesheet" href="{% static 'core/css/reset.css' %}" type="text/css" media="all">
     <link rel="stylesheet" href="{% static 'core/css/layout.css' %}" type="text/css" media="all">
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}" type="text/css" media="all">
-    <script type="text/javascript" src="{% static 'core/js/cufon-yui.js' %}"></script>
-    <script type="text/javascript" src="{% static 'core/js/cufon-replace.js' %}"></script>
     <script type="text/javascript" src="{% static 'core/js/Swis721_Cn_BT_400.font.js' %}"></script>
     <script type="text/javascript" src="{% static 'core/js/Swis721_Cn_BT_700.font.js' %}"></script>
     <link rel="stylesheet"
@@ -49,14 +47,14 @@
             <!-- header -->
             <header>
                 <div class="wrapper">
-                    <h1><a href="index.html" id="logo">Progress Business Company</a></h1>
+                    <h1><a href="/" id="logo">MAXSender.com</a></h1>
                     <nav>
                         <ul id="menu">
-                            <li id="nav1" class=""><a href="/">Home<span>Welcome!</span></a></li>
-                            <!--<li id="nav2"><a href="News.html">News<span>Fresh</span></a></li>-->
-                            <!--<li id="nav3"><a href="Services.html">Services<span>for you</span></a></li>-->
-                            <!--<li id="nav4"><a href="Products.html">Products<span>The best</span></a></li>-->
-                            <li id="nav5"><a href="/contacts">Contacts<span>Our Address</span></a></li>
+                            <li><a href="/">Buy<span>Better price</span></a></li>
+                            <li><a href="/about">About<span>About us</span></a></li>
+                            <li><a href="/sales">Sales<span>Big sales</span></a></li>
+                            <li><a href="/articles">Articles<span>Сool articles</span></a></li>
+                            <li><a href="/faq">FAQ<span>Answers</span></a></li>
                         </ul>
                     </nav>
                 </div>
@@ -66,6 +64,11 @@
     </div>
 </div>
 <div class="body3">
+    <div {% if request.GET.status == 'success' %}style="display: block"{% endif %} class="success">
+        <div>Success! Pay your order and wait further directed on the your e-mail. For any questions, please
+            poker@test.ru
+        </div>
+    </div>
     <div class="main-template">
         <!-- content -->
         {% block content %}
@@ -78,44 +81,29 @@
         <article id="content2">
             <div class="wrapper">
                 <section class="col3">
-                    <h4>Why Us?</h4>
+                    <h4>Navigation</h4>
                     <ul class="list1">
-                        <li><a href="#">Lorem ipsum dolor sit</a></li>
-                        <li><a href="#">Dmet, consectetur</a></li>
-                        <li><a href="#">Adipisicing elit eiusmod </a></li>
-                        <li><a href="#">Tempor incididunt ut</a></li>
+                        <li><a href="/">Buy</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/sales">Sales</a></li>
+                        <li><a href="/articles">Articles</a></li>
+                        <li><a href="/faq">FAQ</a></li>
                     </ul>
                 </section>
                 <section class="col3 pad_left2">
-                    <h4>Address</h4>
+                    <h4>Contacts</h4>
                     <ul class="address">
-                        <li><span>Country:</span>USA</li>
-                        <li><span>City:</span>San Diego</li>
-                        <li><span>Phone:</span>8 800 154-45-67</li>
-                        <li><span>Email:</span><a href="mailto:">progress@mail.com</a></li>
+                        {% for contact in contacts %}
+                            <li><span>{{ contact.name }}:</span>{{ contact.contact }}</li>
+                        {% endfor %}
                     </ul>
                 </section>
                 <section class="col3 pad_left2">
-                    <h4>Follow Us</h4>
-                    <ul id="icons">
-                        <li><a href="#"><img src="{% static 'core/images/icon1.jpg' %}" alt="">Facebook</a></li>
-                        <li><a href="#"><img src="{% static 'core/images/icon2.jpg' %}" alt="">Twitter</a></li>
-                        <li><a href="#"><img src="{% static 'core/images/icon3.jpg' %}" alt="">LinkedIn</a></li>
-                        <li><a href="#"><img src="{% static 'core/images/icon4.jpg' %}" alt="">Delicious</a></li>
-                    </ul>
-                </section>
-                <section class="col2 right">
-                    <h4>Newsletter</h4>
-                    <form id="newsletter" method="post">
-                        <div>
-                            <div class="wrapper">
-                                <input class="input" type="text" value="Type Your Email Here"
-                                       onblur="if(this.value=='') this.value='Type Your Email Here'"
-                                       onfocus="if(this.value =='Type Your Email Here' ) this.value=''">
-                            </div>
-                            <a href="#" class="button" onclick="document.getElementById('newsletter').submit()">Subscribe</a>
-                        </div>
-                    </form>
+                    <h4>Some text</h4>
+                    <div class="text">Some text Some text Some text Some text Some text Some text Some text
+                        Some text Some text Some text Some text Some text Some text Some text Some text Some text
+                        Some text Some text
+                    </div>
                 </section>
             </div>
         </article>

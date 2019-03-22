@@ -1,6 +1,8 @@
 
 .col1, .col2, .col3, .cols { float:left;}
 
+.min-cols {width: 50px; display: block}
+
 .cols{ width:190px;}
 
 .col1{ width:670px;}
