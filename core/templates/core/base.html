@@ -1,8 +1,20 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ translate.name }}">
 <head>
-    <title>Home</title>
+    <title>
+        {% if 'about' in request.path %}
+            {{ translation.about_title }}
+        {% elif 'sales' in request.path %}
+            {{ translation.sales_title }}
+        {% elif 'articles' in request.path %}
+            {{ translation.articles_title }}
+        {% elif 'faq' in request.path %}
+            {{ translation.faq_title }}
+        {% else %}
+            {{ translation.buy_title }}
+        {% endif %}
+    </title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
           integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -47,14 +59,14 @@
             <!-- header -->
             <header>
                 <div class="wrapper">
-                    <h1><a href="/" id="logo">MAXSender.com</a></h1>
+                    <h1><a href="/" id="logo">{{ translation.site_name }}</a></h1>
                     <nav>
                         <ul id="menu">
-                            <li><a href="/">Buy<span>Better price</span></a></li>
-                            <li><a href="/about">About<span>About us</span></a></li>
-                            <li><a href="/sales">Sales<span>Big sales</span></a></li>
-                            <li><a href="/articles">Articles<span>Сool articles</span></a></li>
-                            <li><a href="/faq">FAQ<span>Answers</span></a></li>
+                            <li><a href="/">{{ translation.buy }}</a></li>
+                            <li><a href="/about">{{ translation.about }}</a></li>
+                            <li><a href="/sales">{{ translation.sales }}</a></li>
+                            <li><a href="/articles">{{ translation.articles }}</a></li>
+                            <li><a href="/faq">{{ translation.faq }}</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -65,8 +77,7 @@
 </div>
 <div class="body3">
     <div {% if request.GET.status == 'success' %}style="display: block"{% endif %} class="success">
-        <div>Success! Pay your order and wait further directed on the your e-mail. For any questions, please
-            poker@test.ru
+        <div>{{ translation.success }}
         </div>
     </div>
     <div class="main-template">
@@ -81,28 +92,26 @@
         <article id="content2">
             <div class="wrapper">
                 <section class="col3">
-                    <h4>Navigation</h4>
+                    <h4>{{ translation.navigation }}</h4>
                     <ul class="list1">
-                        <li><a href="/">Buy</a></li>
-                        <li><a href="/about">About</a></li>
-                        <li><a href="/sales">Sales</a></li>
-                        <li><a href="/articles">Articles</a></li>
-                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/">{{ translation.buy }}</a></li>
+                        <li><a href="/about">{{ translation.about }}</a></li>
+                        <li><a href="/sales">{{ translation.sales }}</a></li>
+                        <li><a href="/articles">{{ translation.articles }}</a></li>
+                        <li><a href="/faq">{{ translation.faq }}</a></li>
                     </ul>
                 </section>
                 <section class="col3 pad_left2">
-                    <h4>Contacts</h4>
+                    <h4>{{ translation.contacts }}</h4>
                     <ul class="address">
                         {% for contact in contacts %}
-                            <li><span>{{ contact.name }}:</span>{{ contact.contact }}</li>
+                            <li><span>{{ contact.name }}:</span>{{ contact.details }}</li>
                         {% endfor %}
                     </ul>
                 </section>
-                <section class="col3 pad_left2">
-                    <h4>Some text</h4>
-                    <div class="text">Some text Some text Some text Some text Some text Some text Some text
-                        Some text Some text Some text Some text Some text Some text Some text Some text Some text
-                        Some text Some text
+                <section style="width: 400px" class="col3 pad_left2">
+                    <h4>{{ translation.text_block }}</h4>
+                    <div class="text">{{ translation.some_text_in_block|safe }}
                     </div>
                 </section>
             </div>

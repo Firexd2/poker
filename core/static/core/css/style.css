@@ -93,18 +93,18 @@ h1 {
 }
 
 h2 {
-    font-size: 40px;
+    font-size: 30px;
     font-style: normal;
     font-weight: 400;
     line-height: 1.2em;
-    padding: 38px 0 11px 0;
+    padding: 15px 0 11px 0;
     color: #000;
     letter-spacing: -1px
 }
 
 h2.under {
     border-bottom: 1px solid #e5e5e5;
-    margin-bottom: 25px
+    margin-bottom: 15px
 }
 
 h3 {
@@ -192,17 +192,17 @@ p {
 
 /* ============================= header ====================== */
 header {
-    padding-top: 34px;
-    height: 148px
+    padding-top: 25px;
+    height: 80px
 }
 
 #logo {
     display: block;
     width: 288px;
     text-decoration: none;
-    font-size: 45px;
+    font-size: 38px;
     color: #bbb;
-    padding-top: 25px;
+    padding-top: 2px;
     font-weight: 600;
 }
 
@@ -212,7 +212,7 @@ header {
 
 #menu {
     float: right;
-    padding-top: 40px
+    padding-top: 15px
 }
 
 #menu li {
@@ -287,8 +287,8 @@ header {
 
 /* ============================= content ====================== */
 #content-template {
-    padding-top: 50px;
-    padding-bottom: 36px
+    padding-top: 20px;
+    padding-bottom: 20px
 }
 
 #content2 {
@@ -963,7 +963,7 @@ footer a:hover {
 }
 
 .advantages .adv-text {
-    font-size: 11px;
+    font-size: 10px;
     display: inline-block;
     line-height: 1.4;
     color: gray;

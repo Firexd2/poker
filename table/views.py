@@ -1,16 +1,14 @@
 import json
 
 from django.http import HttpResponse
-from django.views.generic import TemplateView
 
-from core.models import Contact
-from table.models import Limit, Site, Table, LimitItem, PriceFormation, StatisticLimitItem
+from core.views import BaseView
 from table.admin_forms import StatisticLimitModelForm
+from table.models import Limit, Site, Table, LimitItem, PriceFormation, StatisticLimitItem
 
 
 # TODO: рефакторинг
-# TODO: базовую вью
-class TableView(TemplateView):
+class TableView(BaseView):
     template_name = 'table/home.html'
 
     # переменная, в которой удобно хранить данные, записываемые в методах
@@ -19,18 +17,14 @@ class TableView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TableView, self).get_context_data()
-        # TODO: добавить кэширование
-        tables = Table.get_cached_enabled_tables()
 
+        tables = Table.get_cached_enabled_tables()
         type_table = self.request.GET.get('table', tables.first().name_url)
 
-        limits = Limit.get_cached_enabled_limits_for_table(type_table)
-
         context['sites'] = Site.get_cached_sites_for_table(type_table)
-        context['limits'] = limits
+        context['limits'] = Limit.get_cached_enabled_limits_for_table(type_table)
         context['tables'] = tables
         context['price_formation'] = PriceFormation.objects.first()
-        context['contacts'] = Contact.objects.all() # TODO работать на остальных страницах не будет (сделать общую view)
 
         from django.db import connection
         print(len(connection.queries), 'queries')

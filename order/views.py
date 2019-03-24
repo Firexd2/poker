@@ -1,10 +1,11 @@
 from django.views.generic import FormView
 
+from core.views import BaseView
 from order.forms import OrderForm
 from table.views import TableView
 
 
-class OrderView(FormView):
+class OrderView(FormView, BaseView):
 
     form_class = OrderForm
     template_name = 'order/order.html'

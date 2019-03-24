@@ -1,5 +1,8 @@
+from django.contrib import admin
 from django.contrib.admin import AdminSite
 
+from core.admin_forms import TranslationsModelForm, ContactModelForm
+from core.models import Translation, Contact
 from table.models import Limit, LimitItem, Site, Table, PriceFormation, StatisticLimitItem
 
 
@@ -32,3 +35,13 @@ class CustomAdmin(AdminSite):
 
 admin_site = CustomAdmin()
 admin_site.disable_action('delete_selected')
+
+
+@admin.register(Translation, site=admin_site)
+class TranslationsModelAdmin(admin.ModelAdmin):
+    form = TranslationsModelForm
+
+
+@admin.register(Contact, site=admin_site)
+class ContactModelAdmin(admin.ModelAdmin):
+    form = ContactModelForm

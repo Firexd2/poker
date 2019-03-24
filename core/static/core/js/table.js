@@ -1,11 +1,13 @@
 function Table() {
 
     function templateHtmlGraphicItem(id, name, past_7, past_30) {
+        const past = $("#past").text();
+        const days = $("#days").text();
         return `<div class="block-graphics-item">
                                 <div class="head-graphic">
                                     ` + name + `
                                     <br>
-                                    <span>(past 7 days: ` + past_7 + `; past 30 days: ` + past_30 + `)</span>
+                                    <span>(` + past + ` 7 ` + days + `: ` + past_7 + `; ` + past + ` 30 ` + days + `: ` + past_30 + `)</span>
                                 </div>
                                 <div id="` + id + `" class="graphic"></div>
                             </div>`
@@ -200,7 +202,7 @@ function Table() {
                     // определяем, какие поля показывать
                     const available_fields = type_package === "Subscription" ? fields_for_subscription : fields_for_package;
                     if (available_fields.indexOf(name) !== -1) {
-                        table_obj.append(templateHtmlPreCartItem(name, cache_reading_table[name]))
+                        table_obj.append(templateHtmlPreCartItem($("#" + name).text(), name !== "Order" ? cache_reading_table[name] : $("span[class=" + cache_reading_table[name]+"]").text()))
                     }
                 }
                 // получаем и записываем price

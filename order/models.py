@@ -8,7 +8,6 @@ class TypePayment(OnOffMixin, NamedObjMixin):
     """Модель, описывающая вид оплаты
     """
     payment_details = models.TextField('Payment details')
-    description = models.TextField('Description')
 
     def __str__(self):
         return self.name

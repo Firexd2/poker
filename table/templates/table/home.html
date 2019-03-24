@@ -13,7 +13,6 @@
         <div class="main-template">
             <!-- content -->
             <article id="content-template">
-                <hr style="border-top: 1px solid white; ">
                 <div class="wrapper">
                     <section style="padding-top: 5px" class="col1">
                         <div style="padding-bottom: 5px; float: left" class="btn-group btn-group-toggle"
@@ -28,17 +27,17 @@
                             <label class="btn btn-outline-dark btn-sm active">
                                 <input type="radio" name="options" id="Subscription" class="type-package"
                                        autocomplete="off" checked>
-                                Subscription
+                                {{ translation.subscription }}
                             </label>
                             <label class="btn btn-outline-dark btn-sm">
                                 <input type="radio" name="options" id="Package" class="type-package" autocomplete="off">
-                                Package
+                                {{ translation.package }}
                             </label>
                         </div>
                         <table class="table table-striped table-border table-hover">
                             <thead class="">
                             <tr>
-                                <th scope="col">Limits</th>
+                                <th scope="col">{{ translation.limits }}</th>
                                 {% for site in sites %}
                                     {% if site.is_enabled %}
                                         <th style="text-align: center" scope="col">{{ site.name }}</th>
@@ -68,7 +67,7 @@
                         <table class="table table-border table-size">
                             <thead>
                             <tr>
-                                <th>Tables sizes:</th>
+                                <th>{{ translation.tables_sizes }}:</th>
                                 <th class="table-size-th">
                                     <label>
                                         <input class="tables-sizes" type="checkbox">
@@ -95,7 +94,7 @@
                                         <thead>
                                         <tr>
                                             <th width="138">
-                                                Start subscription:
+                                                {{ translation.start_subscription }}:
                                             </th>
                                             <th style="text-align: right; font-weight: normal;">
                                                 <input style="padding: 0 3px 0 7px; font-size: 14px; width: 110px"
@@ -111,7 +110,7 @@
                                         <thead>
                                         <tr>
                                             <th>
-                                                Term:
+                                                {{ translation.term }}:
                                             </th>
                                             <th style="text-align: right; font-weight: normal">
                                                 <form class="form-inline justify-content-end">
@@ -120,8 +119,7 @@
                                                                data-slider-max="360"
                                                                data-slider-step="15" data-slider-value="30"/>
                                                     </div>
-
-                                                    <div style="width: 108px; height: 25px; padding-left: 30px"
+                                                    <div style="width: 105px; height: 25px; padding-left: 30px"
                                                          class="input-group mb-3">
                                                         <input type="text" name="days" class="form-control input-sm"
                                                                value="30"
@@ -145,7 +143,7 @@
                             <thead>
                             <tr>
                                 <th>
-                                    Numbers of hands:
+                                    {{ translation.numbers_of_hands }}:
                                 </th>
                                 <th style="text-align: right; font-weight: normal">
                                     <form class="form-inline justify-content-end">
@@ -173,24 +171,27 @@
                             <tbody>
                             <tr>
                                 <th>
-                                    <span class="procent">-{{ price_formation.next_limit_discount }}%</span> <span class="adv-text">next <br> limit</span>
+                                    <span class="procent">-{{ price_formation.next_limit_discount }}%</span> <span
+                                        class="adv-text">{{ translation.next_limit|safe }}</span>
                                 </th>
                                 <th>
-                                    <span class="procent">-{{ price_formation.next_month_discount }}%</span> <span class="adv-text">next <br> month</span>
+                                    <span class="procent">-{{ price_formation.next_month_discount }}%</span> <span
+                                        class="adv-text">{{ translation.next_month|safe }}</span>
                                 </th>
                                 <th>
-                                    <span class="procent">-{{ price_formation.next_100k_hands_discount }}%</span> <span class="adv-text">next <br> 100k</span>
+                                    <span class="procent">-{{ price_formation.next_100k_hands_discount }}%</span> <span
+                                        class="adv-text">{{ translation.next_100k|safe }}</span>
                                 </th>
                             </tr>
                             </tbody>
                         </table>
                         <div class="base-cart cart cart-1">
                             <div class="cart-tittle">
-                                <div class="cart-tittle-text">Cart content</div>
+                                <div class="cart-tittle-text">{{ translation.cart_content }}</div>
                                 <div class="cart-tittle-btn">
                                     <button name="clear-cart" type="button"
                                             class="btn btn-outline-dark btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
-                                        clear
+                                        {{ translation.clear }}
                                     </button>
                                 </div>
                             </div>
@@ -200,9 +201,9 @@
                                     {% for item in request.session.cart_items %}
                                         <tr>
                                             <th>
-                                                <b>{{ item.type_package }}</b>:
+                                                <b>{% if item.type_package == 'Subscription' %}{{ translation.subscription }}{% else %}{{ translation.package }}{% endif %}</b>:
                                                 {% if item.type_package == 'Subscription' %}
-                                                    {{ item.term }} days from {{ item.start_date }};
+                                                    {{ item.term }} {{ translation.days_from }} {{ item.start_date }};
                                                 {% else %}
                                                     {{ item.count_hands }};
                                                 {% endif %}
@@ -217,7 +218,7 @@
                                                 {% endfor %}
                                                 <br>
                                                 <div class="cart-items-footer-left">
-                                                    Price: <b>{{ item.price }}</b> $
+                                                    {{ translation.price }}: <b>{{ item.price }}</b> $
                                                 </div>
                                                 <div class="cart-items-footer-right">
                                                     <button type="button" name="delete-item" id="{{ forloop.counter0 }}"
@@ -229,39 +230,40 @@
                                         </tr>
                                     {% endfor %}
                                 {% else %}
-                                    <div id="clear-cart">Cart is empty</div>
+                                    <div id="clear-cart">{{ translation.cart_is_empty }}</div>
                                 {% endif %}
                                 </tbody>
                             </table>
                             <div class="cart-footer">
                                 <div {% if not request.session.cart_items %}style="display: none" {% endif %}
                                      class="cart-total cart-total-1">
-                                    Total: <span id="cart-total-sum">{{ request.session.total }}</span> $
+                                    {{ translation.total }}: <span
+                                        id="cart-total-sum">{{ request.session.total }}</span> $
                                 </div>
                                 <div class="cart-submit cart-submit-1">
                                     <button style="float: right"
                                             onclick="if (!($(this).hasClass('disabled'))){location.href='/order'}"
                                             type="button"
                                             class="btn btn-success btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
-                                        Make order
+                                        {{ translation.make_order_in_cart }}
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <div id="block-info" class="cart block-hide precart">
-                            <div class="precart-tittle">Add to cart</div>
+                            <div class="precart-tittle">{{ translation.add_to_cart }}</div>
                             <table class="table precart-items">
                                 <tbody class="tbody-precart-items">
                                 </tbody>
                             </table>
                             <div class="precart-footer">
                                 <div class="cart-total">
-                                    Total: <span id="precart-total">0.00</span> $
+                                    {{ translation.total }}: <span id="precart-total">0.00</span> $
                                 </div>
                                 <div class="cart-submit">
                                     <button style="float: right" type="button" id="add-to-cart"
                                             class="btn btn-outline-success btn-sm-cart">
-                                        Add to cart
+                                        {{ translation.add_to_cart_btn }}
                                     </button>
                                 </div>
                             </div>
@@ -272,6 +274,21 @@
                 </div>
             </article>
         </div>
+    </div>
+    <div class="block-hide">
+        <span id="days_from">{{ translation.days_from }}</span>
+        <span id="price">{{ translation.price }}</span>
+        <span id="Order">{{ translation.order }}</span>
+        <span id="Game">{{ translation.game }}</span>
+        <span id="Limits">{{ translation.limits }}</span>
+        <span id="Tables">{{ translation.tables }}</span>
+        <span id="Term">{{ translation.term }}</span>
+        <span id="Count">{{ translation.count }}</span>
+        <span id="Start">{{ translation.start }}</span>
+        <span id="past">{{ translation.past }}</span>
+        <span id="days">{{ translation.days }}</span>
+        <span class="Subscription">{{ translation.subscription }}</span>
+        <span class="Package">{{ translation.package }}</span>
     </div>
     {% csrf_token %}
 {% endblock %}

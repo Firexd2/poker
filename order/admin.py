@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from core.admin import admin_site
-from core.admin_form import OrderModelForm
+from .admin_forms import OrderModelForm
 from order.models import Order
 
 

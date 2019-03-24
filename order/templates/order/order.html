@@ -1,6 +1,6 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ translation.name }}">
 <head>
     <title>Order</title>
     <meta charset="utf-8">
@@ -16,13 +16,13 @@
 <form method="POST">{% csrf_token %}
     <div class="base-cart cart-1 block-order">
         <div class="cart-tittle">
-            <div class="cart-tittle-text">Making order</div>
+            <div class="cart-tittle-text">{{ translation.making_order }}</div>
         </div>
         <div class="cart-body">
             <span class="form-errors">{{ form.non_field_errors }}</span>
             <div class="left-right-cart-body left-cart-body">
                 <div class="left-title">
-                    Used payment system:
+                    {{ translation.used_payment_system }}:
                 </div>
                 <div class="payments">
                     <span class="form-errors">{{ form.payment.errors }}</span>
@@ -37,10 +37,7 @@
                                 {{ item.name }}</label>
                             </li>
                             <div class="info-payment">
-                                <div class="details">Our details: {{ item.payment_details }}</div>
-                                {% if item.description %}
-                                    <div class="description">Description: {{ item.description }}</div>
-                                {% endif %}
+                                <div class="details">{{ translation.our_details }}: {{ item.payment_details }}</div>
                             </div>
                         {% endfor %}
                     </ul>
@@ -50,26 +47,21 @@
                 <div class="inputs">
                     <span class="form-errors">{{ form.email.errors }}</span>
                     <label for="">
-                        <span>Your e-mail:</span>
+                        <span>{{ translation.your_email }}:</span>
                         {{ form.email }}
                     </label>
                     <span class="form-errors">{{ form.name.errors }}</span>
                     <label for="">
-                        <span>Your name:</span>
+                        <span>{{ translation.your_name }}:</span>
                         {{ form.name }}
                     </label>
                 </div>
                 <div class="instruction">
                     <div class="tittle">
-                        Instruction
+                        {{ translation.instruction }}
                     </div>
                     <div class="body">
-                        What makes every American a typical one is a desire to get a well-paid job that will cover their
-                        credit card. A <b>credit card is an indispensable</b> part of life in America. In other words,
-                        any American
-                        knows that how he or she handles their credit card or cards, either will help them or haunt them
-                        for
-                        years.
+                        {{ translation.text_in_instruction|safe }}
                     </div>
                 </div>
             </div>
@@ -78,11 +70,11 @@
             <div class="cart-submit cart-submit-1">
                 <button style="float: right" type="submit"
                         class="btn btn-success btn-sm btn-order">
-                    Make order
+                    {{ translation.make_order_in_order }}
                 </button>
                 <button style="float: right" onclick="location.href = '/'" type="button"
                         class="btn btn-outline-secondary btn-sm btn-order">
-                    Back to table
+                    {{ translation.back_to_table }}
                 </button>
             </div>
         </div>

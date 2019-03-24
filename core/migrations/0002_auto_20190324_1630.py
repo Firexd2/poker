@@ -2,8 +2,8 @@
 from django.db import migrations
 
 default_contacts = [
-    {'name': 'e-mail', 'contact': 'max@mail.ru'},
-    {'name': 'ICQ', 'contact': '41011453500451'},
+    {'name': 'e-mail', 'details': 'max@mail.ru'},
+    {'name': 'ICQ', 'details': '41011453500451'},
 ]
 
 
@@ -11,7 +11,10 @@ def create_default_data(apps, schema_editor):
     """Заполняем таблицы дефолтными данными
     """
     Contact = apps.get_model('core', 'Contact')
-    Contact.objects.bulk_create(Contact(**item) for item in default_contacts)
+    Translation = apps.get_model('core', 'Translation')
+
+    Contact.objects.bulk_create(Contact(priority=i, **item) for i, item in enumerate(default_contacts, start=1))
+    Translation.objects.create(name="EN", priority=1, default=True)
 
 
 def reverse(apps, schema_editor):
