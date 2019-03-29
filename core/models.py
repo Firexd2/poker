@@ -1,12 +1,59 @@
+from django.core.mail import EmailMessage
+from django.core.mail.backends.smtp import EmailBackend
 from django.db import models
+from django.utils.safestring import mark_safe
 
 from core.tools.mixins.models import NamedObjMixin, OnOffMixin, PriorityMixin
 
 
+class EmailBackendSetting(models.Model):
+    """Данные для бэкенда почтового клиента
+    """
+    use_tls = models.BooleanField('Use tls',default=True)
+    host = models.CharField('Email host', max_length=1024)
+    host_user = models.CharField('Email host user', max_length=255)
+    host_password = models.CharField('Email host password', max_length=255)
+    port = models.PositiveSmallIntegerField('Email port', default=587)
+
+    email_admin = models.EmailField('Admin e-mail')
+
+    is_active = models.BooleanField('Active')
+
+    class Meta:
+        verbose_name = 'Email backend setting'
+        verbose_name_plural = 'Email backend settings'
+
+    @staticmethod
+    def _get_active_settings():
+        return EmailBackendSetting.objects.get(is_active=True)
+
+    @classmethod
+    def _get_email_backend(cls):
+        settings = cls._get_active_settings()
+        backend = EmailBackend(host=settings.host, port=settings.port, username=settings.host_user,
+                               password=settings.host_password, use_tls=settings.use_tls)
+        return backend
+
+    @classmethod
+    def send_email(cls, subject, body, to=None):
+        settings = cls._get_active_settings()
+
+        if not to:
+            to = settings.email_admin
+
+        # TODO: шлет сырой html
+        email = EmailMessage(subject=subject, body=mark_safe(body), from_email=settings.host_user, to=[to],
+                             connection=cls._get_email_backend())
+        email.send()
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            EmailBackendSetting.objects.update(is_active=False)
+        super(EmailBackendSetting, self).save(*args, **kwargs)
+
+
 class Contact(PriorityMixin, NamedObjMixin):
     details = models.TextField("Details")
-
-    # TODO добавить в админку
 
     class Meta:
         verbose_name = 'Contact'
@@ -17,18 +64,18 @@ class Contact(PriorityMixin, NamedObjMixin):
         return self.name
 
 
-# TODO убрать OnOffMixin
-# TODO: сделать переключение переводов
-class Translation(OnOffMixin, PriorityMixin, NamedObjMixin):
+class Translation(PriorityMixin, NamedObjMixin):
     """Таблица, в которой хранятся все переводы
     Под name хранится название языка
     """
-
-    # TODO: imagefield для флага
     default = models.BooleanField(default=False)
+    image = models.ImageField('Image')
+
+    class Meta:
+        ordering = 'priority',
 
     def __str__(self):
-        return self.name if self.name else "Name isn't found"
+        return self.name
 
     @staticmethod
     def get_translate_by(lang):
@@ -40,8 +87,6 @@ class Translation(OnOffMixin, PriorityMixin, NamedObjMixin):
         # всегда должен оставаться дефолтный язык
         if self.default:
             Translation.objects.update(default=False)
-        elif not any(Translation.objects.values_list("default")):
-            self.default = True
 
         self.name = self.name.upper()
 
@@ -69,7 +114,7 @@ class Translation(OnOffMixin, PriorityMixin, NamedObjMixin):
     some_text_in_block = models.TextField("Some text in block", default="Some text in block")
 
     # данные для таблицы
-    subscription = models.TextField("Subscription", default="Subscription")  # TODO: перевод для корзины
+    subscription = models.TextField("Subscription", default="Subscription")
     limits = models.TextField("Limits", default="Limits")
     package = models.TextField("Package", default="Package")
     tables_sizes = models.TextField("Tables sizes", default="Tables sizes")
@@ -116,6 +161,15 @@ class Translation(OnOffMixin, PriorityMixin, NamedObjMixin):
     text_in_instruction = models.TextField("Text in instruction", default="Text in <b>instruction</b>")
     back_to_table = models.TextField("Back to table", default="Back to table")
     make_order_in_order = models.TextField("Make order (in order page)", default="Make order")
-    success = models.TextField("Success",
-                               default="Success! Pay your order and wait further directed on the your e-mail. "
-                                       "For any questions, please poker@test.ru")
+    success = models.TextField("Success", default="Success! Pay your order and wait further directed on the your "
+                                                  "e-mail. For any questions, please poker@test.ru")
+
+    required_keys_for_client = ['{client_name}', '{type_payment}', '{details_payment}', '{total_price}', '{items}']
+    email_letter_subject_for_client = models.TextField("Email letter subject for client", default="Subject")
+    email_letter_body_for_client = models.TextField("Email letter body for client",
+         default="Here must have keys: " + ', '.join(required_keys_for_client))
+
+    required_keys_for_admin = ['{client_name}', '{type_payment}', '{details_payment}', '{total_price}', '{items}', '{notes}']
+    email_letter_subject_for_admin = models.TextField("Email letter subject for admin", default="Subject")
+    email_letter_body_for_admin = models.TextField("Email letter body for admin",
+         default="Here must have keys: " + ', '.join(required_keys_for_admin))

@@ -25,6 +25,9 @@ class PriorityMixin(models.Model):
     """
     priority = models.IntegerField(validators=[MinValueValidator(1)], null=True, blank=True)
 
+    # если True, присвоит новому объекту приоритет
+    auto_priority_for_new_obj = True
+
     class Meta:
         abstract = True
 
@@ -36,14 +39,17 @@ class PriorityMixin(models.Model):
         return self.__class__.objects
 
     def save(self, auto_priority=True, *args, **kwargs):
-        new_obj = not self.id
+        need_auto_priority = bool(self.id) or self.auto_priority_for_new_obj
 
-        if not new_obj and auto_priority:
+        if need_auto_priority and auto_priority:
             objects = self.get_objects_in_view()
             count_objects = objects.count()
 
             if not self.priority or self.priority > count_objects:
-                self.priority = count_objects
+                if self.id:
+                    self.priority = count_objects
+                else:
+                    self.priority = count_objects + 1
             else:
                 # вытаскиваем старый приоритет нашего объекта
                 old_priority = objects.get(id=self.id).priority

@@ -1,7 +1,9 @@
+from django.conf.urls.static import static
 from django.urls import path
 
 from core.views import OtherPagesView
 from order.views import OrderView
+from poker import settings
 from table.admin import admin_site
 from table.views import TableView
 
@@ -13,4 +15,4 @@ urlpatterns = [
     path('sales/', OtherPagesView.as_view(page_name='sales', template_name='core/other_pages.html')),
     path('articles/', OtherPagesView.as_view(page_name='articles', template_name='core/other_pages.html')),
     path('faq/', OtherPagesView.as_view(page_name='faq', template_name='core/other_pages.html')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

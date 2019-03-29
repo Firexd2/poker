@@ -1,15 +1,17 @@
 from django.contrib import admin
 
 from core.admin import admin_site
-from core.tools.mixins.admin import ModelAdminFieldSetsMixin
+from core.tools.mixins.admin import DeleteTableFieldForCreateSetsMixin, DeletePriorityFieldForCreateMixin
 from core.tools.utils import make_enabled, make_disabled
 from table.admin_forms import LimitModelForm, SiteModelForm, StatisticLimitModelForm
 from table.models import Limit, LimitItem, Site, Table, PriceFormation, StatisticLimitItem
 
 
 @admin.register(Limit, site=admin_site)
-class LimitModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
+class LimitModelAdmin(DeleteTableFieldForCreateSetsMixin, DeletePriorityFieldForCreateMixin, admin.ModelAdmin):
     form = LimitModelForm
+
+    list_display = ('__str__', 'is_enabled')
 
     def save_related(self, request, form, formsets, change):
         super(LimitModelAdmin, self).save_related(request, form, formsets, change)
@@ -38,8 +40,10 @@ class LimitModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
 
 
 @admin.register(Site, site=admin_site)
-class SiteModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
+class SiteModelAdmin(DeleteTableFieldForCreateSetsMixin, DeletePriorityFieldForCreateMixin, admin.ModelAdmin):
     form = SiteModelForm
+
+    list_display = ('__str__', 'is_enabled')
 
     def save_related(self, request, form, formsets, change):
         super(SiteModelAdmin, self).save_related(request, form, formsets, change)
@@ -69,6 +73,8 @@ class SiteModelAdmin(ModelAdminFieldSetsMixin, admin.ModelAdmin):
 class LimitItemAdmin(admin.ModelAdmin):
     actions = [make_enabled, make_disabled]
 
+    list_display = ('__str__', 'price_per_month', 'price_per_100k', 'is_enabled')
+
     fieldsets = (
         (None, {
             'fields': ('is_enabled', 'price_per_month', 'price_per_100k'),
@@ -86,6 +92,8 @@ class LimitItemAdmin(admin.ModelAdmin):
 class StatisticLimitItemAdmin(admin.ModelAdmin):
     form = StatisticLimitModelForm
 
+    list_display = ('__str__', 'min_value', 'max_value')
+
     def has_add_permission(self, request):
         return False
 
@@ -95,6 +103,9 @@ class StatisticLimitItemAdmin(admin.ModelAdmin):
 
 @admin.register(Table, site=admin_site)
 class TableAdmin(admin.ModelAdmin):
+
+    list_display = ('__str__', 'is_enabled')
+
     fieldsets = (
         (None, {
             'fields': ('name', 'is_enabled', 'priority'),

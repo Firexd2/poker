@@ -18,7 +18,7 @@
                         <div style="padding-bottom: 5px; float: left" class="btn-group btn-group-toggle"
                              data-toggle="buttons">
                             {% for table in tables %}
-                                <a style="text-decoration: none" href="?table={{ table.name_url }}"
+                                <a style="text-decoration: none" href="?table={{ table.name_url }}&{{ parameter_lang }}"
                                    class="btn btn-outline-dark btn-sm type-game {% if request.GET.table == table.name_url or not request.GET.table and forloop.counter0 == 0 %}active{% endif %}">{{ table.name }}</a>
                             {% endfor %}
                         </div>
@@ -242,7 +242,7 @@
                                 </div>
                                 <div class="cart-submit cart-submit-1">
                                     <button style="float: right"
-                                            onclick="if (!($(this).hasClass('disabled'))){location.href='/order'}"
+                                            onclick="if (!($(this).hasClass('disabled'))){location.href='/order?{{ parameter_lang }}'}"
                                             type="button"
                                             class="btn btn-success btn-sm-cart {% if not request.session.cart_items %}disabled{% endif %}">
                                         {{ translation.make_order_in_cart }}

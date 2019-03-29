@@ -13,6 +13,8 @@ class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
     # необходимая мера, так как из особенного ordering (в Meta) появляются дубли
     objects = DistinctManager()
 
+    auto_priority_for_new_obj = False
+
     class Meta:
         verbose_name = 'Site'
         verbose_name_plural = 'Sites'
@@ -102,7 +104,7 @@ class LimitItem(OnOffMixin):
     def __str__(self):
         # TODO: для отладки
         try:
-            return 'Table: {}; Limit: {}; Site: {}'.format(
+            return '{}; {}; {}'.format(
                 self._get_limit()._get_table(),
                 self._get_limit().name,
                 self.site.name
@@ -114,6 +116,8 @@ class LimitItem(OnOffMixin):
 @cached_decorator(['get_cached_enabled_limits_for_table'])
 class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
     items = models.ManyToManyField(LimitItem, verbose_name='Item', blank=True)
+
+    auto_priority_for_new_obj = False
 
     class Meta:
         verbose_name = 'Limit'

@@ -64,6 +64,8 @@ class TableView(BaseView):
         """Добавляет в корзину (по сути в куки) новый объект
         """
         self.written_data = self.request.POST.copy()
+        # в limit_items_ids[] copy() записывает первое значение, а нужно - список
+        self.written_data['limit_items_ids[]'] = self.request.POST.getlist('limit_items_ids[]')
 
         self._write_price()
         self._write_limits_items_ids()

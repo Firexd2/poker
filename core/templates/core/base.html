@@ -56,17 +56,22 @@
 <div class="body1">
     <div class="body2">
         <div class="main-template">
+            <div class="translations">
+                {% for translation in all_translations %}
+                    <img width="24" height="24" onclick="location.href='?lang={{ translation.name|lower }}'" src="{{ translation.image.url }}" alt="">
+                {% endfor %}
+            </div>
             <!-- header -->
             <header>
                 <div class="wrapper">
                     <h1><a href="/" id="logo">{{ translation.site_name }}</a></h1>
                     <nav>
                         <ul id="menu">
-                            <li><a href="/">{{ translation.buy }}</a></li>
-                            <li><a href="/about">{{ translation.about }}</a></li>
-                            <li><a href="/sales">{{ translation.sales }}</a></li>
-                            <li><a href="/articles">{{ translation.articles }}</a></li>
-                            <li><a href="/faq">{{ translation.faq }}</a></li>
+                            <li><a href="/{% if parameter_lang %}?{{ parameter_lang }}{% endif %}">{{ translation.buy }}</a></li>
+                            <li><a href="/about?{{ parameter_lang }}">{{ translation.about }}</a></li>
+                            <li><a href="/sales?{{ parameter_lang }}">{{ translation.sales }}</a></li>
+                            <li><a href="/articles?{{ parameter_lang }}">{{ translation.articles }}</a></li>
+                            <li><a href="/faq?{{ parameter_lang }}">{{ translation.faq }}</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -94,11 +99,11 @@
                 <section class="col3">
                     <h4>{{ translation.navigation }}</h4>
                     <ul class="list1">
-                        <li><a href="/">{{ translation.buy }}</a></li>
-                        <li><a href="/about">{{ translation.about }}</a></li>
-                        <li><a href="/sales">{{ translation.sales }}</a></li>
-                        <li><a href="/articles">{{ translation.articles }}</a></li>
-                        <li><a href="/faq">{{ translation.faq }}</a></li>
+                        <li><a href="/{% if parameter_lang %}?{{ parameter_lang }}{% endif %}">{{ translation.buy }}</a></li>
+                        <li><a href="/about?{{ parameter_lang }}">{{ translation.about }}</a></li>
+                        <li><a href="/sales?{{ parameter_lang }}">{{ translation.sales }}</a></li>
+                        <li><a href="/articles?{{ parameter_lang }}">{{ translation.articles }}</a></li>
+                        <li><a href="/faq?{{ parameter_lang }}">{{ translation.faq }}</a></li>
                     </ul>
                 </section>
                 <section class="col3 pad_left2">

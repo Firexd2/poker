@@ -2,3 +2,4 @@ Django==2.0.4
 django-multi-form==0.5
 psycopg2==2.7.7
 psycopg2-binary==2.7.7
+Pillow

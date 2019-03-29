@@ -1,6 +1,6 @@
 from django import forms
 
-from core.tools.mixins.admin import ModelFormTableMixin
+from core.tools.mixins.admin import TableMixin
 from core.tools.utils import array_count_validator
 from table.models import Limit, Site, StatisticLimitItem
 from datetime import datetime
@@ -67,14 +67,14 @@ class StatisticLimitModelForm(forms.ModelForm):
         return list_array
 
 
-class LimitModelForm(ModelFormTableMixin, forms.ModelForm):
+class LimitModelForm(TableMixin, forms.ModelForm):
 
     class Meta:
         model = Limit
         exclude = []
 
 
-class SiteModelForm(ModelFormTableMixin, forms.ModelForm):
+class SiteModelForm(TableMixin, forms.ModelForm):
 
     class Meta:
         model = Site

@@ -12,4 +12,4 @@ class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = ('payment', 'email', 'name', 'limit_items')

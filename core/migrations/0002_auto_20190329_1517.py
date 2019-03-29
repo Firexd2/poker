@@ -14,7 +14,7 @@ def create_default_data(apps, schema_editor):
     Translation = apps.get_model('core', 'Translation')
 
     Contact.objects.bulk_create(Contact(priority=i, **item) for i, item in enumerate(default_contacts, start=1))
-    Translation.objects.create(name="EN", priority=1, default=True)
+    Translation.objects.create(name="EN", priority=1, default=True, image='/en.png')
 
 
 def reverse(apps, schema_editor):
