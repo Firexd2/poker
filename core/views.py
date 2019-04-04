@@ -8,9 +8,9 @@ class BaseView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(BaseView, self).get_context_data()
 
-        context['translation'] = Translation.get_translate_by(self.request.GET.get('lang', ''))
-        context['all_translations'] = Translation.objects.all()
-        context['contacts'] = Contact.objects.all()
+        context['translation'] = Translation.get_translation_by(self.request.GET.get('lang', ''))
+        context['all_translations'] = Translation.get_all_translations()
+        context['contacts'] = Contact.get_all_contacts()
         # переменная, которая хранит строку GET параметра с текущим языком. подставлять на все URL
         context['parameter_lang'] = self._get_parameter_lang()
 

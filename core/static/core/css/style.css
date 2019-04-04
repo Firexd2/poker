@@ -1,5 +1,5 @@
 /* Getting the new tags to behave */
-article, aside, audio, canvas, command, datalist, details, embed, figcaption, figure, footer, header, hgroup, keygen, meter, nav, output, progress, section, source, video {
+article, aside, audio, canvas, datalist, details, embed, figcaption, figure, footer, header, hgroup, keygen, meter, nav, output, progress, section, source, video {
     display: block
 }
 
@@ -65,10 +65,6 @@ body {
 
 .body4 {
     background: url(../images/bg.jpg) top center repeat
-}
-
-.body5 {
-    background: url(../images/bg_top_img.jpg) center bottom no-repeat
 }
 
 /* Global Structure ============================================================= */
@@ -164,7 +160,6 @@ h5 .dropcap {
     height: 56px;
     margin-top: 0px;
     margin-right: 10px;
-    background: url(../images/dropcap1.gif) 0 0 no-repeat;
     color: #fff;
     text-align: center
 }
@@ -273,14 +268,6 @@ header {
     padding-right: 4px
 }
 
-.slider .pagination a {
-    display: block;
-    width: 16px;
-    height: 16px;
-    text-indent: -9999px;
-    background: url(../images/buttons.png) right 0 no-repeat
-}
-
 .slider .pagination a:hover, .slider .pagination .current a {
     background-position: left
 }
@@ -329,11 +316,6 @@ header {
     overflow: hidden
 }
 
-#testimonials div {
-    background: url(../images/bg_testimonials.gif) 0 bottom no-repeat #f5f5f5;
-    padding: 25px 27px 53px 29px
-}
-
 #testimonials span {
     display: block;
     padding: 0 0 0 11px;
@@ -352,15 +334,6 @@ header {
     width: 32px;
     height: 32px;
     display: block
-}
-
-.up {
-    right: 33px;
-    background: url(../images/marker_up.gif) 0 0 no-repeat
-}
-
-.down {
-    background: url(../images/marker_down.gif) 0 0 no-repeat
 }
 
 .up:hover, .down:hover {
@@ -390,7 +363,6 @@ header {
     text-decoration: none;
     font-style: normal;
     padding-left: 14px;
-    background: url(../images/marker_1.gif) 0 6px no-repeat
 }
 
 .list1 a:hover {

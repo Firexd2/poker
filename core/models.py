@@ -3,6 +3,7 @@ from django.core.mail.backends.smtp import EmailBackend
 from django.db import models
 from django.utils.safestring import mark_safe
 
+from core.tools.decorators import cached_methods
 from core.tools.mixins.models import NamedObjMixin, OnOffMixin, PriorityMixin
 
 
@@ -52,6 +53,7 @@ class EmailBackendSetting(models.Model):
         super(EmailBackendSetting, self).save(*args, **kwargs)
 
 
+@cached_methods('get_all_contacts')
 class Contact(PriorityMixin, NamedObjMixin):
     details = models.TextField("Details")
 
@@ -63,7 +65,12 @@ class Contact(PriorityMixin, NamedObjMixin):
     def __str__(self):
         return self.name
 
+    @staticmethod
+    def get_all_contacts():
+        return Contact.objects.all()
 
+
+@cached_methods('get_translation_by', 'get_all_translations')
 class Translation(PriorityMixin, NamedObjMixin):
     """Таблица, в которой хранятся все переводы
     Под name хранится название языка
@@ -78,9 +85,13 @@ class Translation(PriorityMixin, NamedObjMixin):
         return self.name
 
     @staticmethod
-    def get_translate_by(lang):
+    def get_translation_by(lang):
         translation = Translation.objects.filter(name=lang.upper()).first()
         return translation if translation else Translation.objects.get(default=True)
+
+    @staticmethod
+    def get_all_translations():
+        return Translation.objects.all()
 
     def save(self, *args, **kwargs):
 

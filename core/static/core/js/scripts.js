@@ -1,4 +1,4 @@
-function Table() {
+function Scripts() {
 
     function templateHtmlGraphicItem(id, name, past_7, past_30) {
         const past = $("#past").text();
@@ -464,4 +464,4 @@ $.ajaxSetup({
     }
 });
 
-Table();
+Scripts();

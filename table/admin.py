@@ -13,6 +13,14 @@ class LimitModelAdmin(DeleteTableFieldForCreateSetsMixin, DeletePriorityFieldFor
 
     list_display = ('__str__', 'is_enabled')
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super(LimitModelAdmin, self).get_fieldsets(request, obj)
+        fields = fieldsets[0][1]['fields']
+
+        del fields[fields.index('items')]
+
+        return fieldsets
+
     def save_related(self, request, form, formsets, change):
         super(LimitModelAdmin, self).save_related(request, form, formsets, change)
 

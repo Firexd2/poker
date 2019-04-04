@@ -2,16 +2,15 @@ from django.core.cache import cache
 
 
 def caching(func):
-    """Декоратор, добавляющий кэширование функций, относительно их аргументов
+    """Декоратор, добавляющий кэширование функций, относительно хэша названии функции и ее аргументов
     """
-
     def wrap(*args):
-        cache_name = func.__name__ + ''.join(args)
+        cache_key = hash(func.__name__ + ''.join(args))
 
-        result = cache.get(cache_name)
+        result = cache.get(cache_key)
         if not result:
             result = func(*args)
-            cache.set(cache_name, result)
+            cache.set(cache_key, result)
 
         return result
 
@@ -29,7 +28,7 @@ def clearing_cache_decorator(func):
     return wrap
 
 
-def cached_decorator(names_methods):
+def cached_methods(*args):
     """Декоратор моделей, который кэширует методы, указанные в names_funcs
     Для инвалидации кэша декорирует методы save и delete чисткой кэша
     """
@@ -37,7 +36,7 @@ def cached_decorator(names_methods):
 
     def wrap(cls):
         # декорируем методы для просчета их кэша
-        for name_method in names_methods:
+        for name_method in args:
             setattr(cls, name_method, caching(getattr(cls, name_method)))
 
         # декорируем методы для инвалидации

@@ -44,7 +44,7 @@ class OrderView(FormView, BaseView):
         TableView.clear_cart(self)
         # TODO отправление e-mail пользователю и админу
 
-        translation = Translation.get_translate_by(self.request.GET.get('lang', ''))
+        translation = Translation.get_translation_by(self.request.GET.get('lang', ''))
 
         # TODO: прикрутить сюда Celery
         # отправляем пользователю письмо о заказе

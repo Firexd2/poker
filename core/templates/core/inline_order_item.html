@@ -1,8 +1,15 @@
 <b>Type:</b>
-{}
+{{ type }}
 <b>Tables</b>:
-{}
+{{ tables }}
 <b>Price</b>:
-{}
-<b>Limits</b>:
-{}
+{{ price }}{% if type == 'Subscription' %}
+    <b>Term:</b>
+    {{ term }}
+    <b>Start:</b>
+    {{ start }}
+{% else %}
+    <b>Count:</b>
+    {{ count }}
+{% endif %}<b>Limits</b>:
+{{ limits }}

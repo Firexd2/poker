@@ -7,9 +7,8 @@ from table.admin_forms import StatisticLimitModelForm
 from table.models import Limit, Site, Table, LimitItem, PriceFormation, StatisticLimitItem
 
 
-# TODO: рефакторинг
 class TableView(BaseView):
-    template_name = 'table/home.html'
+    template_name = 'table/table.html'
 
     # переменная, в которой удобно хранить данные, записываемые в методах
     # все методы _write_* записывают сюда какие-то данные и потом они возвращаются на клиент
@@ -18,16 +17,13 @@ class TableView(BaseView):
     def get_context_data(self, **kwargs):
         context = super(TableView, self).get_context_data()
 
-        tables = Table.get_cached_enabled_tables()
+        tables = Table.get_enabled_tables()
         type_table = self.request.GET.get('table', tables.first().name_url)
 
-        context['sites'] = Site.get_cached_sites_for_table(type_table)
-        context['limits'] = Limit.get_cached_enabled_limits_for_table(type_table)
+        context['sites'] = Site.get_sites_for_table(type_table)
+        context['limits'] = Limit.get_enabled_limits_for_table(type_table)
         context['tables'] = tables
-        context['price_formation'] = PriceFormation.objects.first()
-
-        from django.db import connection
-        print(len(connection.queries), 'queries')
+        context['price_formation'] = PriceFormation._get_instance()
 
         return context
 

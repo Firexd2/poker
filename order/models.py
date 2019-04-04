@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
 from core.tools.mixins.models import NamedObjMixin, OnOffMixin
@@ -24,19 +25,17 @@ class OrderItem(models.Model):
     price = models.FloatField('Price')
 
     def __str__(self):
-        # TODO переделать под render_to_string
-        # это __str__ используется для красивого inline отображения итемов в Order
-        with open('core/templates/core/inline_order_item.html', 'r') as template:
-            template_str = template.read()
-            res = template_str.format(self.type_order, self.tables, self.price,
-                                      ' <br> '.join([str(limit_item) for limit_item in self.limit_items.all()]))
-
-            if self.type_order == 'Subscription':
-                res += '<br> <b>Term</b>: {} <br> <b>Start</b>: {}'.format(self.term, self.start)
-            else:
-                res += '<br> <b>Count:</b> {}'.format(self.count)
-
-            return mark_safe(res)
+        # этот __str__ используется для красивого inline отображения итемов в Order
+        context = {
+            "type": self.type_order,
+            "tables": self.tables,
+            "price": self.price,
+            "limits": mark_safe(' <br> '.join([str(limit_item) for limit_item in self.limit_items.all()])),
+            "term": self.term,
+            "start": self.start,
+            "count": self.count
+        }
+        return mark_safe(render_to_string('core/inline_order_item.html', context=context))
 
 
 class Order(NamedObjMixin):

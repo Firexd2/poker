@@ -3,12 +3,12 @@ import random
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from core.tools.decorators import cached_decorator
+from core.tools.decorators import cached_methods
 from core.tools.mixins.models import NamedObjMixin, OnOffMixin, PriorityMixin, DistinctManager
 from core.tools.utils import name_to_url
 
 
-@cached_decorator(['get_cached_sites_for_table'])
+@cached_methods('get_sites_for_table')
 class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
     # необходимая мера, так как из особенного ordering (в Meta) появляются дубли
     objects = DistinctManager()
@@ -21,7 +21,7 @@ class Site(PriorityMixin, NamedObjMixin, OnOffMixin):
         ordering = 'limititem__limit__table__priority', 'priority'
 
     @staticmethod
-    def get_cached_sites_for_table(type_table):
+    def get_sites_for_table(type_table):
         return Site.objects.filter(limititem__limit__table__name_url=type_table)
 
     def get_objects_in_view(self):
@@ -67,15 +67,11 @@ class StatisticLimitItem(models.Model):
         verbose_name_plural = 'Statistics Limit Item'
 
     def __str__(self):
-        # TODO: для отладки
-        try:
-            return 'Table: {}; Limit: {}; Site: {}'.format(
-                self.limititem._get_limit()._get_table(),
-                self.limititem._get_limit().name,
-                self.limititem.site.name
-            )
-        except:
-            return 'INVALID'
+        return 'Table: {}; Limit: {}; Site: {}'.format(
+            self.limititem._get_limit()._get_table(),
+            self.limititem._get_limit().name,
+            self.limititem.site.name
+        )
 
     def save(self, *args, **kwargs):
 
@@ -102,18 +98,14 @@ class LimitItem(OnOffMixin):
         return self.limit_set.first()
 
     def __str__(self):
-        # TODO: для отладки
-        try:
-            return '{}; {}; {}'.format(
-                self._get_limit()._get_table(),
-                self._get_limit().name,
-                self.site.name
-            )
-        except:
-            return 'INVALID'
+        return '{}; {}; {}'.format(
+            self._get_limit()._get_table(),
+            self._get_limit().name,
+            self.site.name
+        )
 
 
-@cached_decorator(['get_cached_enabled_limits_for_table'])
+@cached_methods('get_enabled_limits_for_table')
 class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
     items = models.ManyToManyField(LimitItem, verbose_name='Item', blank=True)
 
@@ -125,7 +117,7 @@ class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
         ordering = 'table__priority', 'priority'
 
     @staticmethod
-    def get_cached_enabled_limits_for_table(type_table):
+    def get_enabled_limits_for_table(type_table):
         return Limit.objects.filter(is_enabled=True, table__name_url=type_table)
 
     def get_objects_in_view(self):
@@ -139,15 +131,10 @@ class Limit(PriorityMixin, NamedObjMixin, OnOffMixin):
         return self.table_set.first()
 
     def __str__(self):
-
-        # TODO: для отладки
-        try:
-            return '{} ({})'.format(self.name, self._get_table())
-        except:
-            return 'INVALID'
+        return '{} ({})'.format(self.name, self._get_table())
 
 
-@cached_decorator(['get_cached_enabled_tables'])
+@cached_methods('get_enabled_tables')
 class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
     limits = models.ManyToManyField('Limit', verbose_name='Limits', blank=True)
     name_url = models.TextField('URL name', blank=True)
@@ -158,7 +145,7 @@ class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
         ordering = 'priority',
 
     @staticmethod
-    def get_cached_enabled_tables():
+    def get_enabled_tables():
         return Table.objects.filter(is_enabled=True)
 
     def save(self, *args, **kwargs):
@@ -169,6 +156,7 @@ class Table(PriorityMixin, NamedObjMixin, OnOffMixin):
         return self.name
 
 
+@cached_methods("_get_instance")
 class PriceFormation(models.Model):
     next_month_discount = models.IntegerField('Next month discount as a percentage', default=5,
                                               validators=[MinValueValidator(0), MaxValueValidator(100)])
@@ -277,7 +265,7 @@ class PriceFormation(models.Model):
                 next_100k_hands_discount_as_dozens = 1 - instance.next_100k_hands_discount * 0.01
                 # первые 100k рук - без скидки, остальные со скидкой
                 intermediate_result += price_per_100k + price_per_100k * (
-                            count_hands - 1) * next_100k_hands_discount_as_dozens
+                        count_hands - 1) * next_100k_hands_discount_as_dozens
                 # за каждый стол умножаем цену
                 intermediate_result *= count_tables
 
