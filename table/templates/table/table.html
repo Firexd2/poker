@@ -3,6 +3,7 @@
 {% load custom_tags %}
 {% block content %}
     <div class="body3">
+        <h1 class="h1-buy">{{ translation.buy }}</h1>
         <div class="main-template">
             <!-- content -->
             <article id="content-template">
@@ -194,7 +195,9 @@
                                     {% for item in request.session.cart_items %}
                                         <tr>
                                             <th>
-                                                <b>{% if item.type_package == 'Subscription' %}{{ translation.subscription }}{% else %}{{ translation.package }}{% endif %}</b>:
+                                                <b>{% if item.type_package == 'Subscription' %}
+                                                    {{ translation.subscription }}{% else %}
+                                                    {{ translation.package }}{% endif %}</b>:
                                                 {% if item.type_package == 'Subscription' %}
                                                     {{ item.term }} {{ translation.days_from }} {{ item.start_date }};
                                                 {% else %}

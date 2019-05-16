@@ -94,7 +94,6 @@ class Translation(PriorityMixin, NamedObjMixin):
         return Translation.objects.all()
 
     def save(self, *args, **kwargs):
-
         # всегда должен оставаться дефолтный язык
         if self.default:
             Translation.objects.update(default=False)
@@ -111,14 +110,29 @@ class Translation(PriorityMixin, NamedObjMixin):
     site_name = models.TextField("Site name", default="MAXSender.com")
     buy = models.TextField("Buy", default="Buy")
     buy_title = models.TextField("Buy title", default="Buy")
+    buy_description = models.TextField("Buy description", default="")
+    buy_keywords = models.TextField("Buy keywords", default="")
+
     about = models.TextField("About", default="About")
     about_title = models.TextField("About title", default="About")
+    about_description = models.TextField("About description", default="")
+    about_keywords = models.TextField("About keywords", default="")
+
     sales = models.TextField("Sales", default="Sales")
     sales_title = models.TextField("Sales title", default="Sales")
+    sales_description = models.TextField("Sales description", default="")
+    sales_keywords = models.TextField("Sales keywords", default="")
+
     articles = models.TextField("Articles", default="Articles")
     articles_title = models.TextField("Articles title", default="Articles")
+    articles_description = models.TextField("Articles description", default="")
+    articles_keywords = models.TextField("Articles keywords", default="")
+
     faq = models.TextField("FAQ", default="FAQ")
     faq_title = models.TextField("FAQ title", default="FAQ")
+    faq_description = models.TextField("FAQ description", default="")
+    faq_keywords = models.TextField("FAQ keywords", default="")
+
     navigation = models.TextField("Navigation", default="Navigation")
     contacts = models.TextField("Contacts", default="Contacts")
     text_block = models.TextField("Text block", default="Text block")

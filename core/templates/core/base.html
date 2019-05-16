@@ -1,21 +1,27 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html lang="{{ translate.name }}">
-<head>
-    <title>
-        {% if 'about' in request.path %}
-            {{ translation.about_title }}
-        {% elif 'sales' in request.path %}
-            {{ translation.sales_title }}
-        {% elif 'articles' in request.path %}
-            {{ translation.articles_title }}
-        {% elif 'faq' in request.path %}
-            {{ translation.faq_title }}
-        {% else %}
-            {{ translation.buy_title }}
-        {% endif %}
-    </title>
-    <meta charset="utf-8">
+<html lang="{{ translation.name }}">
+<head>{% if 'about' in request.path %}
+        <title>{{ translation.about_title }}</title>
+        <meta name="description" content="{{ translation.about_description }}">
+        <meta name="keywords" content="{{ translation.about_keywords }}">
+    {% elif 'sales' in request.path %}
+        <title>{{ translation.sales_title }}</title>
+        <meta name="description" content="{{ translation.sales_description }}">
+        <meta name="keywords" content="{{ translation.sales_keywords }}">
+    {% elif 'articles' in request.path %}
+        <title>{{ translation.articles_title }}</title>
+        <meta name="description" content="{{ translation.articles_description }}">
+        <meta name="keywords" content="{{ translation.articles_keywords }}">
+    {% elif 'faq' in request.path %}
+        <title>{{ translation.faq_title }}</title>
+        <meta name="description" content="{{ translation.faq_description }}">
+        <meta name="keywords" content="{{ translation.faq_keywords }}">
+    {% else %}
+        <title>{{ translation.buy_title }}</title>
+        <meta name="description" content="{{ translation.buy_description }}">
+        <meta name="keywords" content="{{ translation.buy_keywords }}">
+    {% endif %}<meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
           integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
@@ -49,10 +55,9 @@
             <!-- header -->
             <header>
                 <div class="wrapper">
-                    <h1><a href="/" id="logo">{{ translation.site_name }}</a></h1>
+                    <div style="float: left; padding-top: 12px"><a href="/" id="logo">{{ translation.site_name }}</a></div>
                     <nav>
                         <ul id="menu">
-                            <li><a href="/{% if parameter_lang %}?{{ parameter_lang }}{% endif %}">{{ translation.buy }}</a></li>
                             <li><a href="/about?{{ parameter_lang }}">{{ translation.about }}</a></li>
                             <li><a href="/sales?{{ parameter_lang }}">{{ translation.sales }}</a></li>
                             <li><a href="/articles?{{ parameter_lang }}">{{ translation.articles }}</a></li>
@@ -84,7 +89,6 @@
                 <section class="col3">
                     <h4>{{ translation.navigation }}</h4>
                     <ul class="list1">
-                        <li><a href="/{% if parameter_lang %}?{{ parameter_lang }}{% endif %}">{{ translation.buy }}</a></li>
                         <li><a href="/about?{{ parameter_lang }}">{{ translation.about }}</a></li>
                         <li><a href="/sales?{{ parameter_lang }}">{{ translation.sales }}</a></li>
                         <li><a href="/articles?{{ parameter_lang }}">{{ translation.articles }}</a></li>

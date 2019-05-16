@@ -85,10 +85,6 @@ a:hover {
 }
 
 h1 {
-    float: left
-}
-
-h2 {
     font-size: 30px;
     font-style: normal;
     font-weight: 400;
@@ -98,7 +94,11 @@ h2 {
     letter-spacing: -1px
 }
 
-h2.under {
+.h1-buy {
+    padding-bottom: 0;
+}
+
+h1.under {
     border-bottom: 1px solid #e5e5e5;
     margin-bottom: 15px
 }
@@ -274,7 +274,7 @@ header {
 
 /* ============================= content ====================== */
 #content-template {
-    padding-top: 20px;
+    padding-top: 10px;
     padding-bottom: 20px
 }
 
